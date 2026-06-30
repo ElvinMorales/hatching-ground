@@ -1,0 +1,19 @@
+# Maintenance
+
+Use evidence from actual, private use to improve shared artifacts without copying private content into the repository.
+
+## Monthly checklist
+
+- [ ] Review parked idea titles and safe summaries; archive stale candidates.
+- [ ] Re-score candidates whose constraints materially changed.
+- [ ] Check whether the current hatchling remains the smallest useful version.
+- [ ] Capture confusing prompt or template wording as an abstract issue.
+- [ ] Add a synthetic eval for any repeated failure mode.
+- [ ] Run `python scripts/validate_scaffold.py`.
+- [ ] Review ignored files and staged changes for privacy leakage.
+
+Update prompts and templates only after observed use shows a repeatable gap. Prefer one small rule plus an eval case over adding a large process.
+
+## Future issues
+
+Open one issue per concrete problem. Include a synthetic reproduction, desired behavior, affected artifacts, acceptance criteria, and explicit non-goals. Do not paste real cards, logs, memory, state, screenshots, or machine paths. Runtime or integration proposals must explain why the file-first workflow is insufficient and identify privacy, permission, and human-approval requirements.

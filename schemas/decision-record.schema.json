@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/hatching-ground/decision-record.schema.json",
+  "title": "Hatching Ground Incubation Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "date", "clutch_name", "considered_ideas", "decision", "rationale", "risks", "deferred_features", "next_action"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "date": {"type": "string", "format": "date"},
+    "clutch_name": {"type": "string", "minLength": 1},
+    "considered_ideas": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "selected_idea": {"type": ["string", "null"]},
+    "decision": {
+      "type": "string",
+      "enum": ["hatch now", "hatch after one more clarification", "park for later", "split into smaller ideas", "merge with another idea", "discard for now"]
+    },
+    "rationale": {"type": "string", "minLength": 1},
+    "risks": {"type": "array", "items": {"type": "string"}},
+    "deferred_features": {"type": "array", "items": {"type": "string"}},
+    "next_action": {"type": "string", "minLength": 1},
+    "reviewer_notes": {"type": "array", "items": {"type": "string"}}
+  }
+}

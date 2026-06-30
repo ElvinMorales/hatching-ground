@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/hatching-ground/idea-card.schema.json",
+  "title": "Hatching Ground Idea Card",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id", "name", "plain_english_concept", "problem_it_solves",
+    "smallest_useful_version", "likely_pattern", "private_data_involved",
+    "possible_artifacts", "build_difficulty", "usefulness", "privacy_risk",
+    "maintenance_burden", "recommendation", "scores", "created_at", "updated_at"
+  ],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "name": {"type": "string", "minLength": 1},
+    "plain_english_concept": {"type": "string", "minLength": 1},
+    "problem_it_solves": {"type": "string", "minLength": 1},
+    "smallest_useful_version": {"type": "string", "minLength": 1},
+    "likely_pattern": {
+      "type": "string",
+      "enum": ["prompt-only assistant", "file-first mirror agent", "workflow agent", "research-to-action agent", "maintenance agent", "other"]
+    },
+    "private_data_involved": {"type": "string", "enum": ["none", "low", "moderate", "high"]},
+    "possible_artifacts": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "build_difficulty": {"$ref": "#/$defs/level"},
+    "usefulness": {"$ref": "#/$defs/level"},
+    "privacy_risk": {"$ref": "#/$defs/level"},
+    "maintenance_burden": {"$ref": "#/$defs/level"},
+    "recommendation": {
+      "type": "string",
+      "enum": ["hatch now", "hatch after one more clarification", "park for later", "split into smaller ideas", "merge with another idea", "discard for now"]
+    },
+    "scores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["personal_usefulness", "mvp_clarity", "build_simplicity", "privacy_safety", "reuse_potential", "maintenance_lightness", "fun_momentum"],
+      "properties": {
+        "personal_usefulness": {"$ref": "#/$defs/score"},
+        "mvp_clarity": {"$ref": "#/$defs/score"},
+        "build_simplicity": {"$ref": "#/$defs/score"},
+        "privacy_safety": {"$ref": "#/$defs/score"},
+        "reuse_potential": {"$ref": "#/$defs/score"},
+        "maintenance_lightness": {"$ref": "#/$defs/score"},
+        "fun_momentum": {"$ref": "#/$defs/score"}
+      }
+    },
+    "notes": {"type": "array", "items": {"type": "string"}},
+    "created_at": {"type": "string", "format": "date-time"},
+    "updated_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "level": {"type": "string", "enum": ["low", "medium", "high"]},
+    "score": {"type": "integer", "minimum": 1, "maximum": 5}
+  }
+}
