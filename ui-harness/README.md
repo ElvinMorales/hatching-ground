@@ -39,7 +39,7 @@ After pasting model output back into the harness, heuristic validation checks fo
 
 ## Privacy model
 
-The harness is local-first by design. Nothing leaves your machine. No cookies, no localStorage, no sessionStorage, no network calls, no analytics. Private session data lives only in your browser's page memory until you close or reload the tab. Export artifacts to an ignored `local/` or `artifacts/private/` folder—never to tracked folders unless the content is synthetic and public-safe.
+The UI is local-first. The page does not send anything automatically. Content only leaves your machine if you copy it into Claude/GPT, download/share it, or commit it. No cookies, no localStorage, no sessionStorage, no network calls, no analytics. Private session data lives only in your browser's page memory until you close or reload the tab. Export artifacts to an ignored `local/` or `artifacts/private/` folder—never to tracked folders unless the content is synthetic and public-safe.
 
 ## Future runtime possibilities
 

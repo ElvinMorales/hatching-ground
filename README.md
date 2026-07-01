@@ -40,4 +40,4 @@ Hatching Ground now includes an optional local UI harness. It is a self-containe
 - See [`ui-harness/README.md`](ui-harness/README.md) for the harness artifact model and contract.
 - See [`docs/ui-harness.md`](docs/ui-harness.md) for usage instructions and design rationale.
 
-> **Privacy warning:** The UI is local-first. Nothing leaves your machine. Save exported artifacts to an ignored `local/` or `artifacts/private/` folder—never to a tracked directory unless the content is synthetic and public-safe.
+> **Privacy warning:** The UI is local-first. The page does not send anything automatically. Content only leaves your machine if you copy it into Claude/GPT, download/share it, or commit it. Save exported artifacts to an ignored `local/` or `artifacts/private/` folder—never to a tracked directory unless the content is synthetic and public-safe.
