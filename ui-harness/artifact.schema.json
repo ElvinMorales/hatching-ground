@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hatching-ground/ui-harness/artifact.schema.json",
+  "title": "HatchingGroundArtifact",
+  "description": "An exported Hatching Ground artifact (Markdown file, schema, prompt, etc.).",
+  "type": "object",
+  "required": ["artifact_id", "artifact_type", "title", "filename", "created_at", "privacy_classification"],
+  "properties": {
+    "artifact_id": {
+      "type": "string",
+      "description": "Unique artifact identifier."
+    },
+    "artifact_type": {
+      "type": "string",
+      "enum": [
+        "idea_card",
+        "clutch_score",
+        "architecture_brief",
+        "full_architecture",
+        "codex_handoff",
+        "public_private_checklist",
+        "prompt_bundle",
+        "other"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable artifact title."
+    },
+    "filename": {
+      "type": "string",
+      "description": "Recommended filename for local storage.",
+      "examples": [
+        "idea-card.md",
+        "clutch-score.md",
+        "architecture-brief.md",
+        "full-agent-architecture.md",
+        "codex-handoff.md",
+        "public-private-checklist.md"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "privacy_classification": {
+      "type": "string",
+      "enum": ["private-only", "potentially-publishable", "public-safe"],
+      "description": "Mirrors the public/private boundary taxonomy."
+    },
+    "source_workflow": {
+      "type": "string",
+      "enum": [
+        "first_clutch_brainstorm",
+        "idea_card",
+        "score_clutch",
+        "hatch_gate",
+        "architecture_brief",
+        "full_architecture",
+        "codex_handoff",
+        "public_private_boundary"
+      ]
+    },
+    "content_summary": {
+      "type": "string",
+      "description": "Brief human-readable summary of what the artifact contains."
+    },
+    "should_commit": {
+      "type": "boolean",
+      "description": "Whether this artifact is safe to commit to a public or shared repository. Default false for private outputs.",
+      "default": false
+    }
+  },
+  "additionalProperties": false
+}

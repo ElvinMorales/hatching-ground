@@ -24,6 +24,12 @@ REQUIRED_FILES = [
     "runtime/.env.example", "evals/rubric.md", "evals/cases.jsonl",
     "docs/setup.md", "docs/usage.md", "docs/maintenance.md",
     "scripts/validate_scaffold.py",
+    # UI harness
+    "ui-harness/README.md", "ui-harness/harness-contract.md",
+    "ui-harness/session.schema.json", "ui-harness/artifact.schema.json",
+    "ui-harness/workflow.schema.json",
+    "ui-harness/examples/synthetic-session.json",
+    "ui/hatching-ground.html", "docs/ui-harness.md",
 ]
 
 EVAL_FIELDS = {
@@ -35,14 +41,17 @@ IGNORE_RULES = {
     ".env", ".env.*", "!.env.example", "local/", "private/",
     "data/private/", "data/local/", "memory/private/", "state/private/",
     "logs/", "runtime/private/", "runtime/logs/", "*.log",
+    "ui/local/", "ui-harness/local/", "sessions/private/", "artifacts/private/",
 }
 
 CONTENT_CHECKS = {
-    "README.md": ["Hatching Ground", "Discover ideas", "Codex handoff", "Never commit"],
+    "README.md": ["Hatching Ground", "Discover ideas", "Codex handoff", "Never commit", "UI Harness"],
     "AGENTS.md": ["artifact-first", "synthetic examples only", "runtime integrations"],
     "guardrails/public-private-boundary.md": ["Private-only", "Public-safe", "Potentially publishable later"],
     "workflows/hatching-workflow.md": ["Smallest useful version is clear", "No high-risk automation"],
     "runtime/README.md": ["local-first", "not part of this MVP", "least privilege"],
+    "ui-harness/harness-contract.md": ["model API calls", "durable memory", "broad filesystem access"],
+    "docs/ui-harness.md": ["local-first", "network calls", "artifacts/private/"],
 }
 
 
@@ -59,6 +68,31 @@ def main() -> int:
                 failures.append(f"{name}: expected an object schema")
         except (OSError, json.JSONDecodeError) as exc:
             failures.append(f"{name}: invalid JSON: {exc}")
+
+    harness_schemas = [
+        "ui-harness/session.schema.json",
+        "ui-harness/artifact.schema.json",
+        "ui-harness/workflow.schema.json",
+    ]
+    for name in harness_schemas:
+        try:
+            data = json.loads((ROOT / name).read_text(encoding="utf-8"))
+            if not isinstance(data, dict) or data.get("type") != "object":
+                failures.append(f"{name}: expected an object schema")
+        except (OSError, json.JSONDecodeError) as exc:
+            failures.append(f"{name}: invalid JSON: {exc}")
+
+    synthetic_path = ROOT / "ui-harness/examples/synthetic-session.json"
+    try:
+        data = json.loads(synthetic_path.read_text(encoding="utf-8"))
+        if not isinstance(data, dict):
+            failures.append("ui-harness/examples/synthetic-session.json: expected a JSON object")
+        else:
+            for field in ("session_id", "workflow", "generated_prompt", "artifacts"):
+                if field not in data:
+                    failures.append(f"ui-harness/examples/synthetic-session.json: missing field: {field}")
+    except (OSError, json.JSONDecodeError) as exc:
+        failures.append(f"ui-harness/examples/synthetic-session.json: invalid JSON: {exc}")
 
     eval_path = ROOT / "evals/cases.jsonl"
     eval_count = 0
@@ -121,7 +155,9 @@ def main() -> int:
         return 1
 
     print(f"PASS: {len(REQUIRED_FILES)} required files present")
-    print("PASS: 2 JSON Schemas parse as JSON")
+    print("PASS: 2 core JSON Schemas parse as JSON")
+    print("PASS: 3 harness JSON Schemas parse as JSON")
+    print("PASS: synthetic harness session parses as JSON with required fields")
     print(f"PASS: {eval_count} JSONL eval cases parse and contain required fields")
     print("PASS: required content and privacy-oriented ignore rules found")
     print("PASS: no obvious embedded secrets found (manual review still required)")

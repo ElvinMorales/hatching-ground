@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hatching Ground</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --border: #2e3145;
+    --accent: #7c9ef5;
+    --accent-dim: #4a5fa8;
+    --warn: #e8a44a;
+    --danger: #e05a5a;
+    --ok: #5ab87a;
+    --text: #d4d8f0;
+    --muted: #7a7f9a;
+    --label: #9aa0c0;
+    --radius: 6px;
+    --gap: 1.2rem;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 15px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.6;
+    padding: 2rem 1rem;
+  }
+  .page { max-width: 820px; margin: 0 auto; }
+
+  /* Header */
+  header { margin-bottom: 2rem; }
+  header h1 { font-size: 1.7rem; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; }
+  header p.sub { color: var(--muted); margin-top: .25rem; font-size: .9rem; }
+  .privacy-note {
+    margin-top: 1rem;
+    padding: .7rem 1rem;
+    background: #1f1a10;
+    border-left: 3px solid var(--warn);
+    border-radius: var(--radius);
+    font-size: .84rem;
+    color: var(--warn);
+    line-height: 1.5;
+  }
+
+  /* Cards / sections */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem 1.4rem;
+    margin-bottom: var(--gap);
+  }
+  .card h2 {
+    font-size: .9rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--label);
+    margin-bottom: .9rem;
+  }
+  .card h2 span.step {
+    background: var(--border);
+    color: var(--accent);
+    border-radius: 3px;
+    padding: 0 .4em;
+    margin-right: .4em;
+    font-size: .8rem;
+  }
+
+  /* Form elements */
+  label { display: block; font-size: .82rem; color: var(--label); margin-bottom: .25rem; }
+  select, input[type="text"], textarea {
+    width: 100%;
+    background: #0f1117;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: inherit;
+    font-size: .88rem;
+    padding: .5rem .7rem;
+    margin-bottom: .8rem;
+    transition: border-color .15s;
+    resize: vertical;
+  }
+  select { cursor: pointer; }
+  select:focus, input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent-dim);
+  }
+  textarea { min-height: 80px; }
+  textarea.tall { min-height: 140px; }
+  textarea.output-area { min-height: 200px; font-size: .84rem; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+  @media (max-width: 600px) { .field-row { grid-template-columns: 1fr; } }
+
+  /* Buttons */
+  .btn-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .4rem; }
+  button {
+    background: var(--accent-dim);
+    color: #e8ecff;
+    border: none;
+    border-radius: var(--radius);
+    padding: .45rem 1rem;
+    font-size: .84rem;
+    cursor: pointer;
+    transition: background .15s;
+    font-family: inherit;
+  }
+  button:hover { background: var(--accent); }
+  button.secondary {
+    background: var(--border);
+    color: var(--text);
+  }
+  button.secondary:hover { background: #3a3f5c; }
+  button.danger { background: #5a2020; color: #f0a0a0; }
+  button.danger:hover { background: var(--danger); color: #fff; }
+
+  /* Validation result */
+  .validation-result {
+    display: none;
+    margin-top: .8rem;
+    padding: .7rem 1rem;
+    border-radius: var(--radius);
+    font-size: .84rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+  .validation-result.pass { background: #0f2018; border-left: 3px solid var(--ok); color: #8ee4aa; }
+  .validation-result.warn { background: #201808; border-left: 3px solid var(--warn); color: var(--warn); }
+  .validation-result.fail { background: #200808; border-left: 3px solid var(--danger); color: #f0a0a0; }
+
+  /* Safety box */
+  .safety-box {
+    border: 1px solid #3a2020;
+    background: #160e0e;
+    border-radius: var(--radius);
+    padding: 1rem 1.2rem;
+    font-size: .83rem;
+    color: #c48080;
+    margin-bottom: var(--gap);
+  }
+  .safety-box h3 { color: var(--danger); font-size: .82rem; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .5rem; }
+  .safety-box ul { padding-left: 1.2rem; }
+  .safety-box li { margin-bottom: .2rem; }
+
+  /* Workflow hint */
+  #workflow-hint {
+    font-size: .82rem;
+    color: var(--muted);
+    margin-top: -.4rem;
+    margin-bottom: .8rem;
+    line-height: 1.4;
+    display: none;
+  }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+  .muted { color: var(--muted); font-size: .82rem; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <h1>Hatching Ground</h1>
+  <p class="sub">Local incubator for hatching small personal agent ideas with Claude or GPT</p>
+  <div class="privacy-note">
+    <strong>Privacy:</strong> This page runs entirely in your browser. Nothing is sent anywhere.
+    No localStorage, no cookies, no analytics, no network calls.
+    Page memory is cleared when you close or reload the tab.
+    Save outputs to an ignored local folder—never commit private ideas to a tracked repository.
+  </div>
+</header>
+
+<!-- Safety warnings (always visible) -->
+<div class="safety-box">
+  <h3>Safety reminders</h3>
+  <ul>
+    <li>Do not commit private ideas, personal notes, or work-in-progress to a public repository.</li>
+    <li>Do not paste secrets, credentials, API keys, or sensitive personal data into this page or any model prompt.</li>
+    <li>Do not paste employer data, health data, financial data, or information about others without their consent.</li>
+    <li>Generated outputs are drafts. Require human review before acting on any recommendation.</li>
+    <li>Provider suitability for sensitive topics is your responsibility to assess before using any external model.</li>
+  </ul>
+</div>
+
+<!-- Step 1: Workflow selector -->
+<div class="card">
+  <h2><span class="step">1</span>Select Workflow</h2>
+  <label for="workflow">Workflow</label>
+  <select id="workflow">
+    <option value="">— choose a workflow —</option>
+    <option value="first_clutch_brainstorm">First Clutch Brainstorm</option>
+    <option value="idea_card">Turn Rough Idea Into Idea Card</option>
+    <option value="score_clutch">Score a Clutch</option>
+    <option value="hatch_gate">Hatch Gate Check</option>
+    <option value="architecture_brief">Prepare Architecture Brief</option>
+    <option value="full_architecture">Prepare Full Architecture</option>
+    <option value="codex_handoff">Prepare Codex Handoff</option>
+    <option value="public_private_boundary">Check Public/Private Boundary</option>
+  </select>
+  <div id="workflow-hint"></div>
+</div>
+
+<!-- Step 2: Context fields -->
+<div class="card">
+  <h2><span class="step">2</span>Context</h2>
+  <div class="field-row">
+    <div>
+      <label for="project-area">Project or life area</label>
+      <input type="text" id="project-area" placeholder="e.g. writing, home, work tooling">
+    </div>
+    <div>
+      <label for="build-style">Preferred build style</label>
+      <input type="text" id="build-style" placeholder="e.g. file-first, local script, no server">
+    </div>
+  </div>
+  <label for="goal">Current goal</label>
+  <textarea id="goal" placeholder="What are you trying to accomplish?" rows="2"></textarea>
+  <label for="friction">Recurring friction or problem</label>
+  <textarea id="friction" placeholder="What keeps going wrong or taking too long?" rows="2"></textarea>
+  <label for="repo-context">Existing project or repo context</label>
+  <textarea id="repo-context" placeholder="Relevant existing work, tools, or constraints (optional)" rows="2"></textarea>
+  <label for="constraints">Constraints</label>
+  <textarea id="constraints" placeholder="Time, skill, cost, or privacy constraints" rows="2"></textarea>
+  <label for="privacy-notes">Privacy notes</label>
+  <textarea id="privacy-notes" placeholder="What data is involved? Sensitivity level? Who can see outputs?" rows="2"></textarea>
+</div>
+
+<!-- Step 3: Idea input -->
+<div class="card">
+  <h2><span class="step">3</span>Idea Input</h2>
+  <label for="rough-idea">Rough idea</label>
+  <textarea id="rough-idea" class="tall" placeholder="Describe your rough idea freely. No need to structure it yet."></textarea>
+  <label for="clutch-input">Clutch candidates (for scoring or brainstorm workflows)</label>
+  <textarea id="clutch-input" class="tall" placeholder="List 3–7 candidate ideas, one per line or as a short paragraph each."></textarea>
+</div>
+
+<!-- Step 4: Prompt generator -->
+<div class="card">
+  <h2><span class="step">4</span>Generate Prompt</h2>
+  <div class="btn-row">
+    <button onclick="generatePrompt()">Generate Prompt</button>
+    <button class="secondary" onclick="copyPrompt()">Copy Prompt</button>
+    <button class="secondary" onclick="downloadPrompt()">Download as .txt</button>
+    <button class="danger" onclick="clearForm()">Clear Form</button>
+  </div>
+  <br>
+  <label for="generated-prompt">Generated prompt (copy and paste into Claude or GPT)</label>
+  <textarea id="generated-prompt" class="output-area" readonly placeholder="Generated prompt will appear here after you click Generate Prompt."></textarea>
+</div>
+
+<!-- Step 5: Model output -->
+<div class="card">
+  <h2><span class="step">5</span>Paste Model Output</h2>
+  <p class="muted" style="margin-bottom:.8rem">After getting a response from Claude or GPT, paste it here.</p>
+  <label for="model-output">Model output</label>
+  <textarea id="model-output" class="output-area tall" placeholder="Paste the model's response here."></textarea>
+</div>
+
+<!-- Step 6: Validation -->
+<div class="card">
+  <h2><span class="step">6</span>Validate</h2>
+  <p class="muted" style="margin-bottom:.8rem">Heuristic checks only — advisory, not blocking. Review all warnings.</p>
+  <div class="btn-row">
+    <button class="secondary" onclick="validate('idea_card')">Validate Idea Card</button>
+    <button class="secondary" onclick="validate('score_clutch')">Validate Clutch Score</button>
+    <button class="secondary" onclick="validate('architecture_brief')">Validate Architecture Brief</button>
+    <button class="secondary" onclick="validate('full_architecture')">Validate Full Architecture</button>
+    <button class="secondary" onclick="validate('codex_handoff')">Validate Codex Handoff</button>
+    <button class="secondary" onclick="validate('public_private_boundary')">Validate Public/Private Checklist</button>
+  </div>
+  <div id="validation-result" class="validation-result"></div>
+</div>
+
+<!-- Step 7: Export -->
+<div class="card">
+  <h2><span class="step">7</span>Export Artifact</h2>
+  <p class="muted" style="margin-bottom:.8rem">Save the model output as a Markdown file. Store in an ignored local folder—not a tracked directory.</p>
+  <div class="btn-row">
+    <button onclick="downloadArtifact('idea-card.md')">Download: idea-card.md</button>
+    <button onclick="downloadArtifact('clutch-score.md')">Download: clutch-score.md</button>
+    <button onclick="downloadArtifact('architecture-brief.md')">Download: architecture-brief.md</button>
+    <button onclick="downloadArtifact('full-agent-architecture.md')">Download: full-agent-architecture.md</button>
+    <button onclick="downloadArtifact('codex-handoff.md')">Download: codex-handoff.md</button>
+    <button onclick="downloadArtifact('public-private-checklist.md')">Download: public-private-checklist.md</button>
+  </div>
+</div>
+
+</div><!-- .page -->
+
+<script>
+/* ---------------------------------------------------------------
+   All data lives in page memory only. No localStorage, no cookies,
+   no sessionStorage, no network calls, no external resources.
+   User input is never logged to the console.
+--------------------------------------------------------------- */
+
+var WORKFLOWS = {
+  first_clutch_brainstorm: {
+    hint: "Discover 3–7 small, bounded agent candidates from your context and friction.",
+    outputType: "brainstorm_list"
+  },
+  idea_card: {
+    hint: "Turn a rough idea into a structured idea card with title, problem, MVP, and privacy classification.",
+    outputType: "idea_card"
+  },
+  score_clutch: {
+    hint: "Score a set of candidates against the seven Hatching Ground criteria and recommend one.",
+    outputType: "clutch_score"
+  },
+  hatch_gate: {
+    hint: "Check whether an idea is ready for architecture work. Surfaces failed gates before investing more.",
+    outputType: "hatch_gate"
+  },
+  architecture_brief: {
+    hint: "Produce a focused pre-architecture brief: problem, MVP scope, constraints, first test.",
+    outputType: "architecture_brief"
+  },
+  full_architecture: {
+    hint: "Produce a twelve-section full architecture document covering pattern, scope, structure, guardrails, and Codex prompt.",
+    outputType: "full_architecture"
+  },
+  codex_handoff: {
+    hint: "Prepare a complete implementation prompt for a Codex or coding agent, including file structure and first-run test.",
+    outputType: "codex_handoff"
+  },
+  public_private_boundary: {
+    hint: "Classify what is private-only, potentially publishable, and public-safe. Surface any privacy risks.",
+    outputType: "public_private_checklist"
+  }
+};
+
+var VALIDATION_CHECKS = {
+  idea_card: [
+    { label: "Has title or name", test: function(t){ return /#+\s*\w|name\s*[:—]/i.test(t); } },
+    { label: "Has problem or friction statement", test: function(t){ return /problem|friction|recurring|pain/i.test(t); } },
+    { label: "Has MVP or smallest version", test: function(t){ return /mvp|smallest|minimum|first.?version/i.test(t); } },
+    { label: "Has privacy classification", test: function(t){ return /private|public.safe|publishable|sensitivity/i.test(t); } },
+    { label: "Has first-run test or success criterion", test: function(t){ return /first.?run|test|success|criterion|done when/i.test(t); } },
+    { label: "No broad permissions or cloud assumption", test: function(t){ return !/always.on|broad.permission|deploy.*vps|cloud.storage|database.*prod/i.test(t); } }
+  ],
+  score_clutch: [
+    { label: "Has scoring or criteria", test: function(t){ return /score|criteria|criterion|\d\/5|\d\/10/i.test(t); } },
+    { label: "Has recommendation (hatch/park/discard)", test: function(t){ return /hatch|park|discard|merge|split|recommend/i.test(t); } },
+    { label: "Has privacy note per candidate", test: function(t){ return /private|public|sensitive/i.test(t); } },
+    { label: "Has one selection or clear winner", test: function(t){ return /winner|selected|chosen|hatchling|go with/i.test(t); } }
+  ],
+  architecture_brief: [
+    { label: "Has problem restatement", test: function(t){ return /problem|idea restatement|restate/i.test(t); } },
+    { label: "Has MVP scope", test: function(t){ return /mvp|scope|smallest/i.test(t); } },
+    { label: "Has privacy or guardrails section", test: function(t){ return /privacy|guardrail|private.only|boundary/i.test(t); } },
+    { label: "Has first test or success criterion", test: function(t){ return /first.?run|first.?test|success|done when/i.test(t); } },
+    { label: "No cloud or VPS in MVP scope", test: function(t){ return !/vps|cloud.deploy|production.server/i.test(t); } }
+  ],
+  full_architecture: [
+    { label: "Has Idea Restatement section", test: function(t){ return /idea restatement|1\.\s*idea/i.test(t); } },
+    { label: "Has Recommended Pattern", test: function(t){ return /recommended pattern|2\.\s*recommended/i.test(t); } },
+    { label: "Has MVP Scope", test: function(t){ return /mvp scope|3\.\s*mvp/i.test(t); } },
+    { label: "Has Guardrails and Privacy Notes", test: function(t){ return /guardrail|privacy note|8\.\s*guardrail/i.test(t); } },
+    { label: "Has Codex Implementation Prompt", test: function(t){ return /codex|implementation prompt|9\.\s*codex/i.test(t); } },
+    { label: "Has First-Run Checklist", test: function(t){ return /first.?run checklist|11\.\s*first/i.test(t); } },
+    { label: "Has Iteration Backlog", test: function(t){ return /iteration backlog|12\.\s*iteration/i.test(t); } },
+    { label: "No autonomous actions in MVP", test: function(t){ return !/autonomous|auto.send|auto.commit|auto.deploy/i.test(t); } }
+  ],
+  codex_handoff: [
+    { label: "Has implementation prompt or instructions", test: function(t){ return /implement|build|create.*file|write.*script/i.test(t); } },
+    { label: "Has file or repo structure", test: function(t){ return /structure|file.*layout|directory|folder/i.test(t); } },
+    { label: "Has first-run test", test: function(t){ return /first.?run|test|verify|success/i.test(t); } },
+    { label: "Has privacy or safety note", test: function(t){ return /private|safety|guardrail|no.*secret/i.test(t); } }
+  ],
+  public_private_boundary: [
+    { label: "Has Private-only classification", test: function(t){ return /private.only|private only/i.test(t); } },
+    { label: "Has Public-safe or Potentially publishable", test: function(t){ return /public.safe|potentially.publishable/i.test(t); } },
+    { label: "Has explicit risk or warning", test: function(t){ return /risk|warning|caution|do not commit|never commit/i.test(t); } }
+  ]
+};
+
+var PROMPTS = {
+  first_clutch_brainstorm: function(ctx) {
+    return [
+      "HATCHING GROUND — WORKFLOW: First Clutch Brainstorm",
+      "",
+      "Please generate a clutch of 3–7 small, bounded personal agent ideas.",
+      "",
+      ctx.project ? "Project or life area: " + ctx.project : "",
+      ctx.goal ? "Goal: " + ctx.goal : "",
+      ctx.friction ? "Recurring friction: " + ctx.friction : "",
+      ctx.constraints ? "Constraints: " + ctx.constraints : "",
+      ctx.privacy ? "Privacy notes: " + ctx.privacy : "",
+      ctx.buildStyle ? "Preferred build style: " + ctx.buildStyle : "",
+      "",
+      "For each idea:",
+      "- Give it a short name.",
+      "- State the problem it solves.",
+      "- Describe the smallest useful version.",
+      "- Classify data sensitivity (private-only / potentially-publishable / public-safe).",
+      "- Give a first-run test (how would the user know it worked?).",
+      "",
+      "Hatching Ground principles:",
+      "- One user, one primary problem, bounded MVP.",
+      "- Prefer file-first, local-first, script-first approaches.",
+      "- Avoid multi-agent systems unless clearly justified.",
+      "- Do not suggest always-on servers, broad permissions, or cloud deployment for the MVP.",
+      "- Do not encourage building every idea.",
+    ].filter(function(l){ return l !== undefined && l !== null; }).join("\n");
+  },
+
+  idea_card: function(ctx) {
+    return [
+      "HATCHING GROUND — WORKFLOW: Turn Rough Idea Into Idea Card",
+      "",
+      ctx.project ? "Project or life area: " + ctx.project : "",
+      ctx.goal ? "Goal: " + ctx.goal : "",
+      ctx.friction ? "Recurring friction: " + ctx.friction : "",
+      ctx.constraints ? "Constraints: " + ctx.constraints : "",
+      ctx.privacy ? "Privacy notes: " + ctx.privacy : "",
+      ctx.buildStyle ? "Preferred build style: " + ctx.buildStyle : "",
+      ctx.roughIdea ? "\nRough idea:\n" + ctx.roughIdea : "",
+      "",
+      "Please produce an idea card with these sections:",
+      "1. Title",
+      "2. Problem Statement",
+      "3. Proposed Agent Role",
+      "4. Smallest Useful Version (MVP)",
+      "5. Inputs and Outputs",
+      "6. Privacy Classification (private-only / potentially-publishable / public-safe)",
+      "7. Assumptions",
+      "8. First-Run Test",
+      "9. Hatch Gate (is it ready for architecture work?)",
+      "",
+      "Hatching Ground principles:",
+      "- Prefer the smallest version that proves value.",
+      "- Keep private data out of tracked examples.",
+      "- Require human review for consequential actions.",
+      "- Do not invest in architecture until the idea card is solid.",
+    ].filter(Boolean).join("\n");
+  },
+
+  score_clutch: function(ctx) {
+    return [
+      "HATCHING GROUND — WORKFLOW: Score a Clutch",
+      "",
+      ctx.project ? "Project or life area: " + ctx.project : "",
+      ctx.friction ? "Recurring friction: " + ctx.friction : "",
+      ctx.constraints ? "Constraints: " + ctx.constraints : "",
+      ctx.privacy ? "Privacy notes: " + ctx.privacy : "",
+      ctx.clutch ? "\nCandidates:\n" + ctx.clutch : "",
+      "",
+      "Please score each candidate on these seven criteria (1–5 each):",
+      "1. Small — one user, one primary problem, bounded MVP",
+      "2. Specific — clear inputs, outputs, assumptions, first-run test",
+      "3. Personally useful — addresses credible recurring friction",
+      "4. Artifact-first — produces inspectable files or structured outputs",
+      "5. Privacy-aware — classifies data, minimizes exposure",
+      "6. Buildable — matches available effort, no unproven dependencies",
+      "7. Not over-engineered — defers hosting, autonomy, memory, integrations",
+      "",
+      "Then:",
+      "- Sum scores for each candidate.",
+      "- Apply hatch gate (fail candidates with critical issues regardless of total).",
+      "- Recommend: hatch, park, split, merge, or discard.",
+      "- Select one hatchling or explain why none qualifies yet.",
+    ].filter(Boolean).join("\n");
+  },
+
+  hatch_gate: function(ctx) {
+    return [
+      "HATCHING GROUND — WORKFLOW: Hatch Gate Check",
+      "",
+      ctx.project ? "Project or life area: " + ctx.project : "",
+      ctx.roughIdea ? "\nIdea summary:\n" + ctx.roughIdea : "",
+      ctx.privacy ? "\nPrivacy notes: " + ctx.privacy : "",
+      "",
+      "Please check the following hatch gates:",
+      "1. Is the problem statement specific and personally recurring?",
+      "2. Is the scope bounded to one user and one workflow?",
+      "3. Is a smallest useful version clear?",
+      "4. Is a first-run test defined?",
+      "5. Is the privacy classification clear and safe?",
+      "6. Is the required effort realistic?",
+      "7. Are no high-risk dependencies assumed for the MVP?",
+      "",
+      "For each gate: pass or fail with a brief justification.",
+      "If any gate fails: stop before architecture work and ask one material clarifying question.",
+      "If all gates pass: confirm the idea is ready for architecture work.",
+    ].filter(Boolean).join("\n");
+  },
+
+  architecture_brief: function(ctx) {
+    return [
+      "HATCHING GROUND — WORKFLOW: Prepare Architecture Brief",
+      "",
+      ctx.project ? "Project or life area: " + ctx.project : "",
+      ctx.goal ? "Goal: " + ctx.goal : "",
+      ctx.friction ? "Recurring friction: " + ctx.friction : "",
+      ctx.repoContext ? "Existing context: " + ctx.repoContext : "",
+      ctx.constraints ? "Constraints: " + ctx.constraints : "",
+      ctx.privacy ? "Privacy notes: " + ctx.privacy : "",
+      ctx.buildStyle ? "Preferred build style: " + ctx.buildStyle : "",
+      ctx.roughIdea ? "\nIdea:\n" + ctx.roughIdea : "",
+      "",
+      "Please produce a pre-architecture brief with these sections:",
+      "1. Idea Restatement",
+      "2. Problem and Friction",
+      "3. MVP Scope (what it does and does not do)",
+      "4. Proposed Agent Role",
+      "5. Key Inputs and Outputs",
+      "6. Privacy and Guardrails",
+      "7. First-Run Test",
+      "8. Deferred Items (what waits for v2)",
+      "",
+      "Hatching Ground principles:",
+      "- Prefer file-first, script-first, local-first.",
+      "- Separate memory from state.",
+      "- No always-on server or cloud deployment in MVP.",
+      "- Human review required for consequential actions.",
+    ].filter(Boolean).join("\n");
+  },
+
+  full_architecture: function(ctx) {
+    return [
+      "HATCHING GROUND — WORKFLOW: Prepare Full Architecture",
+      "",
+      ctx.project ? "Project or life area: " + ctx.project : "",
+      ctx.goal ? "Goal: " + ctx.goal : "",
+      ctx.friction ? "Recurring friction: " + ctx.friction : "",
+      ctx.repoContext ? "Existing context: " + ctx.repoContext : "",
+      ctx.constraints ? "Constraints: " + ctx.constraints : "",
+      ctx.privacy ? "Privacy notes: " + ctx.privacy : "",
+      ctx.buildStyle ? "Preferred build style: " + ctx.buildStyle : "",
+      ctx.roughIdea ? "\nIdea:\n" + ctx.roughIdea : "",
+      "",
+      "Please produce a full architecture document with these twelve sections:",
+      "1. Idea Restatement",
+      "2. Recommended Pattern",
+      "3. MVP Scope",
+      "4. Taxonomy Artifact Map",
+      "5. Proposed Repo Structure",
+      "6. UI Harness Recommendation",
+      "7. Key Design Decisions",
+      "8. Guardrails and Privacy Notes",
+      "9. Codex Implementation Prompt",
+      "10. Powering and Usage Plan",
+      "11. First-Run Checklist",
+      "12. Iteration Backlog",
+      "",
+      "Hatching Ground principles:",
+      "- Think in artifacts, not just prompts.",
+      "- Prefer private-first, file-first architectures.",
+      "- Start with the smallest useful version.",
+      "- Avoid overbuilding and multi-agent systems unless clearly justified.",
+      "- Separate memory from state.",
+      "- Classify public/private boundaries explicitly.",
+      "- Recommend a UI harness for full architecture outputs.",
+      "- Require human review for consequential actions.",
+      "- Use synthetic examples for publishable material.",
+    ].filter(Boolean).join("\n");
+  },
+
+  codex_handoff: function(ctx) {
+    return [
+      "HATCHING GROUND — WORKFLOW: Prepare Codex Handoff",
+      "",
+      ctx.project ? "Project or life area: " + ctx.project : "",
+      ctx.goal ? "Goal: " + ctx.goal : "",
+      ctx.repoContext ? "Existing repo context: " + ctx.repoContext : "",
+      ctx.constraints ? "Constraints: " + ctx.constraints : "",
+      ctx.privacy ? "Privacy notes: " + ctx.privacy : "",
+      ctx.buildStyle ? "Preferred build style: " + ctx.buildStyle : "",
+      ctx.roughIdea ? "\nIdea or architecture summary:\n" + ctx.roughIdea : "",
+      "",
+      "Please produce a Codex implementation prompt with these sections:",
+      "1. Task Summary",
+      "2. Repo or File Structure",
+      "3. Files to Create",
+      "4. Files to Modify",
+      "5. Implementation Notes",
+      "6. Privacy and Safety Constraints",
+      "7. First-Run Test",
+      "8. What Not to Do",
+      "",
+      "The prompt should be self-contained so a coding agent can implement it from scratch.",
+      "Do not assume memory of prior conversations.",
+      "Include explicit safety constraints: no secrets, no broad permissions, no cloud deployment unless specified.",
+    ].filter(Boolean).join("\n");
+  },
+
+  public_private_boundary: function(ctx) {
+    return [
+      "HATCHING GROUND — WORKFLOW: Check Public/Private Boundary",
+      "",
+      ctx.project ? "Project or life area: " + ctx.project : "",
+      ctx.roughIdea ? "\nContent or idea to classify:\n" + ctx.roughIdea : "",
+      ctx.privacy ? "\nPrivacy context: " + ctx.privacy : "",
+      "",
+      "Please classify each element of this content or idea into one of three categories:",
+      "",
+      "PRIVATE-ONLY: Contains personal data, financial data, health data, relationship data, employer data,",
+      "credentials, private notes, raw memory, or raw state. Must stay in ignored local storage.",
+      "Must not be committed or shared.",
+      "",
+      "POTENTIALLY PUBLISHABLE LATER: Currently private because of context or draft state.",
+      "Could be published if synthetic examples replace personal details.",
+      "",
+      "PUBLIC-SAFE: Contains no personal data, uses synthetic examples, and would not reveal",
+      "sensitive context if shared. Safe to track in a public repository.",
+      "",
+      "Then:",
+      "- Identify any risks in the boundary classification.",
+      "- Flag anything that could leak private context indirectly.",
+      "- Recommend storage location (tracked repo / ignored local / encrypted local).",
+    ].filter(Boolean).join("\n");
+  }
+};
+
+function getContext() {
+  return {
+    project: document.getElementById("project-area").value.trim(),
+    goal: document.getElementById("goal").value.trim(),
+    friction: document.getElementById("friction").value.trim(),
+    repoContext: document.getElementById("repo-context").value.trim(),
+    constraints: document.getElementById("constraints").value.trim(),
+    privacy: document.getElementById("privacy-notes").value.trim(),
+    buildStyle: document.getElementById("build-style").value.trim(),
+    roughIdea: document.getElementById("rough-idea").value.trim(),
+    clutch: document.getElementById("clutch-input").value.trim()
+  };
+}
+
+function generatePrompt() {
+  var wf = document.getElementById("workflow").value;
+  if (!wf) {
+    document.getElementById("generated-prompt").value = "Please select a workflow first.";
+    return;
+  }
+  var fn = PROMPTS[wf];
+  if (!fn) {
+    document.getElementById("generated-prompt").value = "Workflow prompt not found.";
+    return;
+  }
+  var ctx = getContext();
+  document.getElementById("generated-prompt").value = fn(ctx);
+}
+
+function copyPrompt() {
+  var el = document.getElementById("generated-prompt");
+  if (!el.value || el.value === "Please select a workflow first.") {
+    generatePrompt();
+  }
+  if (!el.value) return;
+  el.select();
+  document.execCommand("copy");
+  window.getSelection && window.getSelection().removeAllRanges && window.getSelection().removeAllRanges();
+}
+
+function downloadPrompt() {
+  var el = document.getElementById("generated-prompt");
+  if (!el.value || el.value === "Please select a workflow first.") {
+    generatePrompt();
+  }
+  if (!el.value) return;
+  triggerDownload("hatching-ground-prompt.txt", el.value);
+}
+
+function downloadArtifact(filename) {
+  var content = document.getElementById("model-output").value.trim();
+  if (!content) {
+    alert("Paste model output first (Step 5), then download.");
+    return;
+  }
+  triggerDownload(filename, content);
+}
+
+function triggerDownload(filename, text) {
+  var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function validate(type) {
+  var checks = VALIDATION_CHECKS[type];
+  var output = document.getElementById("model-output").value.trim();
+  var resultEl = document.getElementById("validation-result");
+
+  if (!output) {
+    resultEl.className = "validation-result warn";
+    resultEl.style.display = "block";
+    resultEl.textContent = "No model output found. Paste model output in Step 5 first.";
+    return;
+  }
+  if (!checks) {
+    resultEl.className = "validation-result warn";
+    resultEl.style.display = "block";
+    resultEl.textContent = "No validation checks defined for this workflow.";
+    return;
+  }
+
+  var passed = [];
+  var failed = [];
+  checks.forEach(function(c) {
+    if (c.test(output)) {
+      passed.push(c.label);
+    } else {
+      failed.push(c.label);
+    }
+  });
+
+  if (failed.length === 0) {
+    resultEl.className = "validation-result pass";
+    resultEl.textContent = "PASS — All " + passed.length + " checks passed. Review the output before acting on it.";
+  } else if (failed.length <= 2) {
+    resultEl.className = "validation-result warn";
+    resultEl.textContent = "ADVISORY — " + failed.length + " check(s) did not pass:\n\n" +
+      failed.map(function(f){ return "- " + f; }).join("\n") +
+      "\n\nPassed: " + passed.join(", ") + "\n\nReview the output and consider whether these are present but phrased differently.";
+  } else {
+    resultEl.className = "validation-result fail";
+    resultEl.textContent = "REVIEW — " + failed.length + " checks did not pass:\n\n" +
+      failed.map(function(f){ return "- " + f; }).join("\n") +
+      "\n\nPassed: " + passed.join(", ") + "\n\nThe output may be incomplete or not follow Hatching Ground structure. Review before using.";
+  }
+  resultEl.style.display = "block";
+}
+
+function clearForm() {
+  if (!confirm("Clear all form fields? This cannot be undone.")) return;
+  ["project-area","goal","friction","repo-context","constraints","privacy-notes","build-style",
+   "rough-idea","clutch-input","generated-prompt","model-output"].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+  document.getElementById("workflow").value = "";
+  document.getElementById("workflow-hint").style.display = "none";
+  document.getElementById("workflow-hint").textContent = "";
+  var r = document.getElementById("validation-result");
+  r.style.display = "none";
+  r.textContent = "";
+}
+
+document.getElementById("workflow").addEventListener("change", function() {
+  var hint = document.getElementById("workflow-hint");
+  var wf = WORKFLOWS[this.value];
+  if (wf) {
+    hint.textContent = wf.hint;
+    hint.style.display = "block";
+  } else {
+    hint.textContent = "";
+    hint.style.display = "none";
+  }
+});
+</script>
+</body>
+</html>

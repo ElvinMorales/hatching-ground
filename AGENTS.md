@@ -17,4 +17,8 @@ Do not add real personal or family data, health or financial data, employer data
 
 ## Scope boundary
 
-Do not add runtime integrations, broad filesystem access, write-capable tools, a web app, database, API server, VPS deployment, OpenClaw Gateway, multi-agent orchestration, live memory/state, monitoring, messaging, or automated commits unless explicitly requested in a later scoped change.
+Do not add runtime integrations, broad filesystem access, write-capable tools, a database, API server, VPS deployment, OpenClaw Gateway, multi-agent orchestration, live memory/state, monitoring, messaging, or automated commits unless explicitly requested in a later scoped change.
+
+**Allowed in this MVP:** A self-contained static HTML UI harness (`ui/hatching-ground.html`) with no external dependencies, no network calls, no persistent browser storage, no model API calls, and no backend. This harness assembles prompts, accepts pasted model output, validates heuristically, and exports Markdown artifacts. It does not extend permitted scope beyond these constraints.
+
+The following remain prohibited even with the UI harness present: model API keys or calls, backend servers, databases, OpenClaw Gateway, VPS deployment, always-on services, broad filesystem access, real private data in tracked files, secrets, employer data, and machine-specific paths.

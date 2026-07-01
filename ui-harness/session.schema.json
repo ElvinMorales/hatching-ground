@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hatching-ground/ui-harness/session.schema.json",
+  "title": "HatchingGroundSession",
+  "description": "A Hatching Ground UI harness session. All fields are optional to support partial in-progress sessions.",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Unique session identifier (e.g. ISO timestamp + short slug)."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "workflow": {
+      "type": "string",
+      "enum": [
+        "first_clutch_brainstorm",
+        "idea_card",
+        "score_clutch",
+        "hatch_gate",
+        "architecture_brief",
+        "full_architecture",
+        "codex_handoff",
+        "public_private_boundary"
+      ]
+    },
+    "project_or_life_area": {
+      "type": "string",
+      "description": "Domain or life area the idea belongs to (e.g. writing, home, work tooling)."
+    },
+    "goal": {
+      "type": "string",
+      "description": "What the user is trying to accomplish."
+    },
+    "friction": {
+      "type": "string",
+      "description": "Recurring problem or friction driving the idea."
+    },
+    "constraints": {
+      "type": "string",
+      "description": "Time, skill, cost, or privacy constraints."
+    },
+    "privacy_notes": {
+      "type": "string",
+      "description": "Notes on what data is involved and sensitivity level."
+    },
+    "preferred_build_style": {
+      "type": "string",
+      "description": "How the user prefers to build (e.g. file-first, scripts, local-only)."
+    },
+    "rough_idea": {
+      "type": "string",
+      "description": "The raw unstructured idea before processing."
+    },
+    "clutch_input": {
+      "type": "string",
+      "description": "Multiple candidate ideas for clutch scoring."
+    },
+    "generated_prompt": {
+      "type": "string",
+      "description": "The prompt bundle generated for this session, ready to paste into Claude or GPT."
+    },
+    "model_output": {
+      "type": "string",
+      "description": "The model response pasted back into the harness."
+    },
+    "validation_summary": {
+      "type": "object",
+      "description": "Results from heuristic validation of the model output.",
+      "properties": {
+        "passed": { "type": "boolean" },
+        "checks_run": { "type": "array", "items": { "type": "string" } },
+        "warnings": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "string" }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "description": "Artifact references exported from this session.",
+      "items": { "$ref": "artifact.schema.json" }
+    }
+  },
+  "additionalProperties": false
+}
