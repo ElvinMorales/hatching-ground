@@ -16,3 +16,7 @@ logs/
 runtime/private/
 runtime/logs/
 *.log
+ui/local/
+ui-harness/local/
+sessions/private/
+artifacts/private/

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hatching-ground/ui-harness/workflow.schema.json",
+  "title": "HatchingGroundWorkflow",
+  "description": "A supported Hatching Ground workflow definition.",
+  "type": "object",
+  "required": ["workflow_id", "display_name", "description", "output_type", "recommended_filename"],
+  "properties": {
+    "workflow_id": {
+      "type": "string",
+      "enum": [
+        "first_clutch_brainstorm",
+        "idea_card",
+        "score_clutch",
+        "hatch_gate",
+        "architecture_brief",
+        "full_architecture",
+        "codex_handoff",
+        "public_private_boundary"
+      ]
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "input_fields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["field_id", "label", "required"],
+        "properties": {
+          "field_id": { "type": "string" },
+          "label": { "type": "string" },
+          "required": { "type": "boolean" },
+          "hint": { "type": "string" }
+        }
+      }
+    },
+    "output_type": {
+      "type": "string",
+      "enum": [
+        "idea_card",
+        "clutch_score",
+        "architecture_brief",
+        "full_architecture",
+        "codex_handoff",
+        "public_private_checklist",
+        "brainstorm_list"
+      ]
+    },
+    "validation_checks": {
+      "type": "array",
+      "description": "Heuristic checks to apply to model output for this workflow.",
+      "items": { "type": "string" }
+    },
+    "recommended_filename": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}
