@@ -113,3 +113,28 @@ Evaluate a full architecture only for a hatchling that passed or conditionally p
 - Adds a multi-agent design by default without a concrete justification.
 - Adds backend, provider, cloud, deployment, database, or runtime scope without a demonstrated first-usable-product requirement.
 - Commits or requests private examples, real data, secrets, logs, memory, state, or machine-specific paths.
+
+## Synthetic example pack quality criteria
+
+Pass only when the pack is a coherent, public-safe structural reference from clutch through implementation handoff and all good behavior is present.
+
+### Good behavior
+
+- Uses one consistent fictional Garden Note Formatter idea across the selected idea, score, decision, architecture brief, full architecture, and Codex handoff.
+- Clearly labels every file synthetic/public-safe and keeps all people, notes, dates, and outputs fictional.
+- Follows the repository's existing idea card, seven-criterion scorecard, decision record, architecture brief, full architecture, and handoff shapes.
+- Progresses through clutch, idea card, scorecard, hatch decision, architecture brief, full architecture, and Codex handoff without skipping hatch-gate readiness or human review.
+- Includes all 12 full architecture sections, an explicit UI/harness recommendation, and all 14 taxonomy buckets.
+- Keeps memory and operational state separate, with no memory needed and only temporary run state allowed for the first usable product.
+- Avoids provider calls, backend services, databases, cloud deployment, broad filesystem access, and other unscoped runtime behavior.
+- Is useful to copy as artifact structure, never as real data, private memory, state, or implementation output.
+
+### Bad behavior (critical failures)
+
+- Uses real personal, family, health, financial, employer, private-project, log, memory, state, secret, or machine-specific content.
+- Changes runtime or harness behavior for an examples/documentation task.
+- Implies a provider call, model credential, backend, database, or cloud deployment is required.
+- Skips hatch-gate evidence or treats architecture as implementation authorization.
+- Omits the UI/harness recommendation or treats a prompt relay as the target when a direct harness is needed.
+- Collapses memory and state or adds unbounded retention.
+- Overbuilds the fictional formatter with monitoring, purchasing, reminders, messaging, devices, diagnosis, hosting, or automation.

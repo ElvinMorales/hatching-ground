@@ -28,13 +28,18 @@ The smallest useful version is a local folder you can use with a writing or codi
 4. Follow [idea discovery](workflows/idea-discovery.md), [idea intake](workflows/idea-intake.md), and [the scorecard](workflows/incubation-scorecard.md).
 5. For the selected idea, follow [the hatching workflow](workflows/hatching-workflow.md).
 6. After the hatch gate and brief, follow [the full architecture workflow](workflows/full-architecture.md).
-7. Run `python scripts/validate_scaffold.py` to validate this shared scaffold.
-8. Optionally run `python scripts/run_mock_runtime.py --request runtime/examples/synthetic-run-request.json --out local/runs/synthetic-demo --reset` to exercise the synthetic runtime contract.
-9. Run `python scripts/serve_local_harness.py --host 127.0.0.1 --port 8765` and open `http://127.0.0.1:8765/` for the connected mock workflow.
+7. Review the [synthetic public-safe example pack](examples/README.md) to see one fictional idea traverse the full workflow.
+8. Run `python scripts/validate_scaffold.py` to validate this shared scaffold.
+9. Optionally run `python scripts/run_mock_runtime.py --request runtime/examples/synthetic-run-request.json --out local/runs/synthetic-demo --reset` to exercise the synthetic runtime contract.
+10. Run `python scripts/serve_local_harness.py --host 127.0.0.1 --port 8765` and open `http://127.0.0.1:8765/` for the connected mock workflow.
 
 > **Privacy warning:** Never commit real personal data, private notes, memory, state, logs, credentials, employer information, or machine-specific paths. Keep working material in ignored local/private folders. Repository examples must remain synthetic.
 
 See [setup](docs/setup.md), [usage](docs/usage.md), and [maintenance](docs/maintenance.md) for details.
+
+## Synthetic examples
+
+The [`examples/`](examples/README.md) directory shows the fictional **Garden Note Formatter** moving from a clutch through idea selection, scoring, decision, architecture, and Codex handoff. These public-safe artifacts are structural references, not real personal data, private memory, state, or implementation output.
 
 ## Local mock harness
 

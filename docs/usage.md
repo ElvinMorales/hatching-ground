@@ -14,9 +14,23 @@ The canonical artifact path is:
 
 The full architecture is a design artifact, not a runtime. It must define an end-to-end first usable product and make an explicit UI harness decision. Any normal-use copy/paste relay is a prototype/manual fallback, not the target experience. Keep private instances in ignored local folders and use only synthetic examples in tracked files.
 
+## Review the synthetic example pack
+
+Read the public-safe [`examples/`](../examples/README.md) pack in workflow order:
+
+1. `synthetic-clutch.md`
+2. `synthetic-idea-card.md`
+3. `synthetic-scorecard.md`
+4. `synthetic-decision-record.md`
+5. `synthetic-architecture-brief.md`
+6. `synthetic-full-architecture.md`
+7. `synthetic-codex-handoff.md`
+
+The sequence shows how one fictional Garden Note Formatter moves from discovery and intake through hatch review, architecture, and a separately authorized implementation handoff. Copy its artifact structure, not its content, into ignored local work. Every pack file is synthetic/public-safe and is not private memory, state, or implementation output.
+
 ## Synthetic example
 
-Suppose a fictional user repeatedly writes unstructured garden-task notes. A narrow candidate is a **Garden Task Note Formatter**: it converts a pasted synthetic note into a dated checklist saved for review. It needs no integration, memory, or hosting. Its first-run test is whether three synthetic notes produce accurate checklists without inventing tasks. This is public-safe because both the scenario and test data are invented.
+Suppose a fictional user repeatedly writes unstructured garden notes. A narrow candidate is a **Garden Note Formatter**: it converts one pasted synthetic note into a dated checklist saved for review. It needs no integration, memory, or hosting. Its first-run test is whether one synthetic note produces an accurate checklist without inventing tasks. This is public-safe because both the scenario and test data are invented.
 
 The “universal garden manager” version—weather monitoring, purchases, reminders, and device control—should be split and deferred. The formatter can be useful before any automation exists.
 

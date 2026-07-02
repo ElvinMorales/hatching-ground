@@ -39,6 +39,13 @@ REQUIRED_FILES = [
     "docs/setup.md", "docs/usage.md", "docs/maintenance.md",
     "docs/first-usable-product-plan.md",
     "scripts/validate_scaffold.py",
+    # Synthetic end-to-end example pack
+    "examples/README.md", "examples/synthetic-clutch.md",
+    "examples/synthetic-idea-card.md", "examples/synthetic-scorecard.md",
+    "examples/synthetic-decision-record.md",
+    "examples/synthetic-architecture-brief.md",
+    "examples/synthetic-full-architecture.md",
+    "examples/synthetic-codex-handoff.md",
     # UI harness
     "ui-harness/README.md", "ui-harness/harness-contract.md",
     "ui-harness/session.schema.json", "ui-harness/artifact.schema.json",
@@ -113,6 +120,33 @@ ARCHITECTURE_HEADINGS = [
     "## 7. Key Design Decisions", "## 8. Guardrails and Privacy Notes",
     "## 9. Codex Implementation Prompt", "## 10. Powering and Usage Plan",
     "## 11. First-Run Checklist", "## 12. Iteration Backlog",
+]
+
+EXAMPLE_FILES = [
+    "examples/README.md",
+    "examples/synthetic-clutch.md",
+    "examples/synthetic-idea-card.md",
+    "examples/synthetic-scorecard.md",
+    "examples/synthetic-decision-record.md",
+    "examples/synthetic-architecture-brief.md",
+    "examples/synthetic-full-architecture.md",
+    "examples/synthetic-codex-handoff.md",
+]
+
+EXAMPLE_LABEL = "Synthetic public-safe example"
+
+EXAMPLE_TAXONOMY_BUCKETS = [
+    "Identity", "Operating style", "Capability modules", "Tools",
+    "Knowledge and resources", "Prompts and interfaces", "Memory", "State",
+    "Planning and orchestration", "Guardrails and governance",
+    "Outputs and schemas", "Evaluation and observability",
+    "Runtime and deployment", "Learning and iteration",
+]
+
+EXAMPLE_READING_ORDER = [
+    "synthetic-clutch.md", "synthetic-idea-card.md", "synthetic-scorecard.md",
+    "synthetic-decision-record.md", "synthetic-architecture-brief.md",
+    "synthetic-full-architecture.md", "synthetic-codex-handoff.md",
 ]
 
 
@@ -195,6 +229,53 @@ def main() -> int:
 
     missing = [name for name in REQUIRED_FILES if not (ROOT / name).is_file()]
     failures.extend(f"missing required file: {name}" for name in missing)
+
+    example_contents: dict[str, str] = {}
+    unsafe_example_patterns = {
+        "machine-specific Windows path": re.compile(r"(?i)[a-z]:\\users\\[^\s\\]+"),
+        "machine-specific Unix home path": re.compile(r"/(?:home|users)/[^/\s]+"),
+        "private-data placeholder": re.compile(
+            r"(?i)(?:<|\[)(?:real|your)[ _-]?(?:name|address|email|phone|employer|secret)(?:>|\])"
+        ),
+        "secret-like assignment": re.compile(
+            r"(?i)(?:api[_-]?key|access[_-]?token|password|secret)\s*[:=]\s*['\"]?[A-Za-z0-9+/=_-]{12,}"
+        ),
+    }
+    for name in EXAMPLE_FILES:
+        try:
+            content = (ROOT / name).read_text(encoding="utf-8")
+            example_contents[name] = content
+            if EXAMPLE_LABEL not in content:
+                failures.append(f"{name}: missing required synthetic public-safe label")
+            for description, pattern in unsafe_example_patterns.items():
+                if pattern.search(content):
+                    failures.append(f"{name}: possible {description}")
+        except OSError as exc:
+            if name not in missing:
+                failures.append(f"{name}: unreadable: {exc}")
+
+    full_example = example_contents.get("examples/synthetic-full-architecture.md", "")
+    for heading in ARCHITECTURE_HEADINGS:
+        if heading not in full_example:
+            failures.append(f"examples/synthetic-full-architecture.md: missing heading: {heading}")
+    for bucket in EXAMPLE_TAXONOMY_BUCKETS:
+        if not re.search(rf"(?m)^\|\s*{re.escape(bucket)}\s*\|", full_example):
+            failures.append(
+                "examples/synthetic-full-architecture.md: missing taxonomy bucket: " + bucket
+            )
+
+    handoff = example_contents.get("examples/synthetic-codex-handoff.md", "").casefold()
+    for needle in ("codex", "validation commands", "acceptance criteria", "what not to build yet"):
+        if needle.casefold() not in handoff:
+            failures.append(f"examples/synthetic-codex-handoff.md: missing required content: {needle!r}")
+
+    example_readme = example_contents.get("examples/README.md", "")
+    positions = [example_readme.find(name) for name in EXAMPLE_READING_ORDER]
+    for name, position in zip(EXAMPLE_READING_ORDER, positions):
+        if position < 0:
+            failures.append(f"examples/README.md: reading order missing {name}")
+    if all(position >= 0 for position in positions) and positions != sorted(positions):
+        failures.append("examples/README.md: example files are not in the required reading order")
 
     for name in ("schemas/idea-card.schema.json", "schemas/decision-record.schema.json"):
         try:
@@ -510,6 +591,7 @@ def main() -> int:
     print(f"PASS: {eval_count} JSONL eval cases parse and contain required fields")
     print("PASS: deterministic mock run emits contract-compatible files and 12 headings")
     print("PASS: browserless local harness server/API smoke test")
+    print("PASS: synthetic example pack labels, safety, reading order, architecture, and handoff")
     print("PASS: local harness frontend has no external resource dependencies")
     print("PASS: required content and privacy-oriented ignore rules found")
     print("PASS: no obvious embedded secrets found (manual review still required)")
