@@ -75,6 +75,14 @@ def request_text(base_url: str, path: str) -> tuple[int, str, str]:
         )
 
 
+def request_error(base_url: str, path: str) -> tuple[int, dict[str, Any]]:
+    try:
+        request_json(base_url, path)
+    except HTTPError as exc:
+        return exc.code, json.loads(exc.read().decode("utf-8"))
+    raise AssertionError(f"GET {path} unexpectedly succeeded")
+
+
 def wait_until_ready(base_url: str, process: subprocess.Popen[str]) -> dict[str, Any]:
     deadline = time.monotonic() + 10
     last_error: Exception | None = None
@@ -146,6 +154,14 @@ def main() -> int:
         assert isinstance(workflows, list)
         assert any(item.get("workflow") == "full_architecture" for item in workflows)
 
+        missing_status, missing_payload = request_error(
+            base_url, "/api/sessions/session-missing-smoke-test"
+        )
+        assert missing_status == 404
+        assert all(missing_payload.get(field) for field in ("error", "action", "retry"))
+        assert request_json(base_url, "/api/health")["ok"] is True
+        assert isinstance(request_json(base_url, "/api/sessions"), list)
+
         session = request_json(
             base_url,
             "/api/sessions",
@@ -215,6 +231,30 @@ def main() -> int:
             assert content_type == expected_type
             assert marker in content
 
+        favicon_status, favicon_type, favicon_content = request_text(base_url, "/favicon.ico")
+        assert favicon_status == 204
+        assert favicon_type == "image/x-icon"
+        assert favicon_content == ""
+
+        app_script = (FRONTEND_ROOT / "app.js").read_text(encoding="utf-8")
+        index_markup = (FRONTEND_ROOT / "index.html").read_text(encoding="utf-8")
+        styles = (FRONTEND_ROOT / "styles.css").read_text(encoding="utf-8")
+        banner_tag = re.search(r'<div\b[^>]*\bid="errorBanner"[^>]*>', index_markup)
+        assert banner_tag and re.search(r"\bhidden(?:\s|=|>)", banner_tag.group(0))
+        assert re.search(
+            r"\[hidden\]\s*\{[^}]*display\s*:\s*none\s*!important\s*;?[^}]*\}",
+            styles,
+            re.IGNORECASE,
+        )
+        fragile_startup = "Promise.all([checkHealth(), refreshSessions()]).catch(showError)"
+        assert fragile_startup not in app_script
+        assert "checkHealth().catch(showError);" in app_script
+        assert "refreshSessions().catch(showError);" in app_script
+        assert "renderResumeError(error);" in app_script
+        assert 'byId("errorBanner").hidden = false;' in app_script
+        assert "showError(error);" in app_script
+        assert app_script.count("clearError();") >= 8
+
         assert_dependency_boundary()
         assert (ROOT / "ui" / "hatching-ground.html").is_file()
         ignore_rules = {
@@ -235,6 +275,8 @@ def main() -> int:
         print("PASS: run returned six events, completed status, artifact metadata, and runtime result")
         print("PASS: artifact preview contains all 12 full architecture headings")
         print("PASS: index.html, app.js, and styles.css are served locally")
+        print("PASS: hidden error banner stays hidden until real errors invoke showError")
+        print("PASS: startup is resilient, favicon is harmless, and API errors stay structured")
         print("PASS: frontend external-resource and server import boundaries")
         print("PASS: generated output stayed below ignored local/harness/")
         print("PASS: static ui/hatching-ground.html fallback remains available")
