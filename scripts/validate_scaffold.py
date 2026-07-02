@@ -17,7 +17,9 @@ REQUIRED_FILES = [
     "prompts/starter-prompts.md",
     "workflows/idea-discovery.md", "workflows/idea-intake.md",
     "workflows/incubation-scorecard.md", "workflows/hatching-workflow.md",
+    "workflows/full-architecture.md",
     "templates/idea-card.md", "templates/architecture-brief.md",
+    "templates/full-agent-architecture.md",
     "templates/codex-handoff.md", "schemas/idea-card.schema.json",
     "schemas/decision-record.schema.json", "guardrails/privacy-policy.md",
     "guardrails/public-private-boundary.md", "runtime/README.md",
@@ -62,6 +64,11 @@ CONTENT_CHECKS = {
     "ui-harness/harness-contract.md": ["model API calls", "durable memory", "broad filesystem access"],
     "docs/ui-harness.md": ["local-first", "network calls", "artifacts/private/"],
     "docs/first-usable-product-plan.md": ["normal-use copy/paste relay", "Mock Mode", "Acceptance Criteria"],
+    "templates/full-agent-architecture.md": [
+        "UI Harness Recommendation", "Taxonomy Artifact Map",
+        "Codex Implementation Prompt", "Powering and Usage Plan",
+        "First-Run Checklist",
+    ],
 }
 
 

@@ -1,6 +1,6 @@
 # Hatching Ground
 
-Hatching Ground is a private-first, file-first incubator for small personal agent ideas. It helps an individual builder turn rough inspiration into structured idea cards, compare a clutch of candidates, select a practical MVP, and prepare an architecture brief and Codex handoff.
+Hatching Ground is a private-first, file-first incubator for small personal agent ideas. It helps an individual builder turn rough inspiration into structured idea cards, compare a clutch of candidates, select a practical first usable product, and prepare an architecture brief, full architecture, and Codex handoff.
 
 This version is an inspectable documentation scaffold. It contains prompts, workflows, templates, JSON Schemas, guardrails, lightweight evaluations, and a static UI prototype. It does not build, deploy, or operate agents.
 
@@ -17,7 +17,8 @@ The MVP is a local folder you can use with a writing or coding assistant:
 3. Score the clutch using seven criteria.
 4. Choose a hatchling or park, split, merge, or discard it.
 5. Create a pre-architecture brief after it passes the hatch gate.
-6. Prepare a Codex handoff for a separate implementation effort.
+6. Use the reviewed brief to create a 12-section full architecture artifact.
+7. Prepare a Codex handoff for a separate implementation effort.
 
 ## Quick start
 
@@ -26,7 +27,8 @@ The MVP is a local folder you can use with a writing or coding assistant:
 3. Copy [the idea card](templates/idea-card.md) into an ignored `local/` folder.
 4. Follow [idea discovery](workflows/idea-discovery.md), [idea intake](workflows/idea-intake.md), and [the scorecard](workflows/incubation-scorecard.md).
 5. For the selected idea, follow [the hatching workflow](workflows/hatching-workflow.md).
-6. Run `python scripts/validate_scaffold.py` to validate this shared scaffold.
+6. After the hatch gate and brief, follow [the full architecture workflow](workflows/full-architecture.md).
+7. Run `python scripts/validate_scaffold.py` to validate this shared scaffold.
 
 > **Privacy warning:** Never commit real personal data, private notes, memory, state, logs, credentials, employer information, or machine-specific paths. Keep working material in ignored local/private folders. Repository examples must remain synthetic.
 
@@ -35,6 +37,8 @@ See [setup](docs/setup.md), [usage](docs/usage.md), and [maintenance](docs/maint
 ## UI Harness
 
 Hatching Ground currently includes a self-contained static UI prototype/manual fallback. It assembles paste-ready prompts, accepts pasted model output, validates it heuristically, and exports Markdown artifacts. It runs from `file://` with no backend, network calls, persistence, or model API keys. This page is useful for workflow testing and fallback use, but its manual copy/paste relay is not the final target interaction.
+
+The full architecture template is a design output after the hatch gate, not an implemented runtime or UI. It records the first usable product, artifact map, interface decision, privacy boundaries, and implementation handoff.
 
 The target first usable product is a local-first, session-based web harness. It will support resumable local sessions, context intake, adapter-backed model runs, a transcript, progress and status, approvals, an artifact drawer, and Markdown export in one interface, without a normal-use copy/paste relay. This is a planned architecture, not an implemented web app. See [the first usable product plan](docs/first-usable-product-plan.md).
 

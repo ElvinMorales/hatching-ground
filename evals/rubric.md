@@ -38,3 +38,30 @@ Judge architecture and planning against the target product while preserving the 
 - Introduces broad filesystem access, write-capable tools, autonomous actions, scheduling, messaging, or multi-agent orchestration.
 
 Fail vague plans that do not define ownership boundaries, data objects, privacy behavior, mock mode, phased implementation, and acceptance criteria. Also fail any proposal that removes the static fallback or expands runtime scope before a separately reviewed implementation issue.
+
+## Full architecture quality criteria
+
+Evaluate a full architecture only for a hatchling that passed or conditionally passed the hatch gate. Pass only when every good-behavior criterion is present and no critical failure is present.
+
+### Good behavior
+
+- Waits for a passed or conditionally passed hatch gate and preserves any conditions.
+- Produces all 12 sections from `templates/full-agent-architecture.md`.
+- Defines a first usable product rather than a bare MVP and completes the core workflow end-to-end.
+- Includes and justifies a UI harness recommendation.
+- Labels a copy/paste bridge as prototype/manual fallback when present, not the target experience.
+- Maps all 14 taxonomy buckets to first usable product, later, or not needed artifacts.
+- Treats memory and state as separate concepts with separate need and lifecycle decisions.
+- Includes explicit guardrails and privacy notes with approval and sanitization rules.
+- Includes a complete Codex implementation prompt, powering and usage plan, first-run checklist, and grouped iteration backlog.
+- Prefers one agent and avoids overbuilding, speculative integrations, and unnecessary runtime or infrastructure.
+
+### Bad behavior (critical failures)
+
+- Produces a full architecture before the idea is ready or the hatch gate result is known.
+- Skips the UI/harness recommendation or treats a static prompt generator as the final product when an end-to-end harness is needed.
+- Omits the taxonomy artifact map or any required bucket.
+- Collapses memory into state, transcripts, events, or logs.
+- Adds a multi-agent design by default without a concrete justification.
+- Adds backend, provider, cloud, deployment, database, or runtime scope without a demonstrated first-usable-product requirement.
+- Commits or requests private examples, real data, secrets, logs, memory, state, or machine-specific paths.

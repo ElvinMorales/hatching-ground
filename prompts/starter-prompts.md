@@ -43,3 +43,13 @@ Check this selected idea against the Hatching Ground hatch gate, then fill the a
 ```text
 Classify this idea and its artifacts as private-only, public-safe, or potentially publishable later: [safe summary]. Identify prohibited public content, propose synthetic replacements, and apply the public-release checklist. Do not reproduce sensitive source details in the answer.
 ```
+
+## 8. Hatch into full architecture
+
+```text
+Act as Hatching Ground and produce an artifact-first full agent architecture from this passed or conditionally passed hatchling: [idea card, hatch gate result, and architecture brief]. If the idea has not passed the hatch gate, stop and recommend returning to idea-card, scorecard, or hatch-gate work.
+
+Use the exact 12-section structure in templates/full-agent-architecture.md. Define a first usable product, not a bare MVP, that supports the core workflow end-to-end without an unnecessary copy/paste relay. A UI harness recommendation, complete 14-bucket taxonomy artifact map, practical repo/file structure, copy-paste-ready Codex implementation prompt, powering and usage plan, first-run checklist, and grouped iteration backlog are required.
+
+Separate private-only inputs and artifacts from public-safe templates, schemas, and examples. Use synthetic examples for anything public-safe or tracked. Keep memory distinct from state, prefer a single agent, require human review for consequential actions, and defer speculative runtime, integrations, hosting, or automation. If normal use requires copying prompts into another system and pasting results back, label that interaction prototype/manual fallback rather than the target product experience.
+```
