@@ -18,6 +18,10 @@ Update prompts and templates only after observed use shows a repeatable gap. Pre
 
 CI runs `python scripts/validate_scaffold.py` on pull requests and pushes to `main`. The validator reads only repository and local generated test files, requires no secrets, and should be run locally before opening a pull request.
 
+## Taxonomy handoff notes
+
+When Hatching Ground produces reusable artifact lessons, capture them as public-safe handoff notes before proposing changes to the separate taxonomy repo. See `docs/ui-harness-taxonomy-notes.md` for the UI harness artifact lessons.
+
 ## Future issues
 
 Open one issue per concrete problem. Include a synthetic reproduction, desired behavior, affected artifacts, acceptance criteria, and explicit non-goals. Do not paste real cards, logs, memory, state, screenshots, or machine paths. Runtime or integration proposals must explain why the file-first workflow is insufficient and identify privacy, permission, and human-approval requirements.
