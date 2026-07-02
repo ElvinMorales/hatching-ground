@@ -2,7 +2,7 @@
 
 Hatching Ground is a private-first, file-first incubator for small personal agent ideas. It helps an individual builder turn rough inspiration into structured idea cards, compare a clutch of candidates, select a practical MVP, and prepare an architecture brief and Codex handoff.
 
-This first version is an inspectable documentation scaffold. It contains prompts, workflows, templates, JSON Schemas, guardrails, and lightweight evaluations. It does not build, deploy, or operate agents.
+This version is an inspectable documentation scaffold. It contains prompts, workflows, templates, JSON Schemas, guardrails, lightweight evaluations, and a static UI prototype. It does not build, deploy, or operate agents.
 
 ## Who it is for
 
@@ -34,10 +34,12 @@ See [setup](docs/setup.md), [usage](docs/usage.md), and [maintenance](docs/maint
 
 ## UI Harness
 
-Hatching Ground now includes an optional local UI harness. It is a self-contained static HTML page that assembles paste-ready prompts, accepts pasted model output, validates it heuristically, and exports Markdown artifacts. It runs from `file://` with no backend, no network calls, no persistence, and no model API keys.
+Hatching Ground currently includes a self-contained static UI prototype/manual fallback. It assembles paste-ready prompts, accepts pasted model output, validates it heuristically, and exports Markdown artifacts. It runs from `file://` with no backend, network calls, persistence, or model API keys. This page is useful for workflow testing and fallback use, but its manual copy/paste relay is not the final target interaction.
 
-- Open [`ui/hatching-ground.html`](ui/hatching-ground.html) in a browser to start using it.
-- See [`ui-harness/README.md`](ui-harness/README.md) for the harness artifact model and contract.
-- See [`docs/ui-harness.md`](docs/ui-harness.md) for usage instructions and design rationale.
+The target first usable product is a local-first, session-based web harness. It will support resumable local sessions, context intake, adapter-backed model runs, a transcript, progress and status, approvals, an artifact drawer, and Markdown export in one interface, without a normal-use copy/paste relay. This is a planned architecture, not an implemented web app. See [the first usable product plan](docs/first-usable-product-plan.md).
 
-> **Privacy warning:** The UI is local-first. The page does not send anything automatically. Content only leaves your machine if you copy it into Claude/GPT, download/share it, or commit it. Save exported artifacts to an ignored `local/` or `artifacts/private/` folder—never to a tracked directory unless the content is synthetic and public-safe.
+- Open [`ui/hatching-ground.html`](ui/hatching-ground.html) in a browser to use the current prototype/manual fallback.
+- See [`ui-harness/README.md`](ui-harness/README.md) for the expanded harness artifact set.
+- See [`docs/ui-harness.md`](docs/ui-harness.md) for current fallback instructions and the target distinction.
+
+> **Privacy warning:** The current static UI is local-first. The page does not send anything automatically. Content only leaves your machine if you copy it into Claude/GPT, download/share it, or commit it. Save exported artifacts to an ignored `local/` or `artifacts/private/` folder—never to a tracked directory unless the content is synthetic and public-safe.

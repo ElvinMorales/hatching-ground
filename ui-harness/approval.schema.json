@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hatching-ground/ui-harness/approval.schema.json",
+  "title": "HatchingGroundApproval",
+  "description": "A UI-visible approval request. The future harness must render the reason, risk, data involved, choices, and safe default before resolution.",
+  "type": "object",
+  "required": ["approval_id", "session_id", "run_id", "requested_action", "reason", "risk_level", "data_involved", "choices", "default_choice", "created_at", "resolved_at", "decision"],
+  "properties": {
+    "approval_id": { "type": "string", "minLength": 1 },
+    "session_id": { "type": "string", "minLength": 1 },
+    "run_id": { "type": "string", "minLength": 1 },
+    "requested_action": { "type": "string", "minLength": 1 },
+    "reason": { "type": "string", "minLength": 1 },
+    "risk_level": { "type": "string", "enum": ["low", "medium", "high"] },
+    "data_involved": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "choices": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 2, "uniqueItems": true },
+    "default_choice": { "type": "string", "minLength": 1, "description": "The safe choice selected if the user does not approve." },
+    "created_at": { "type": "string", "format": "date-time" },
+    "resolved_at": { "type": ["string", "null"], "format": "date-time" },
+    "decision": { "type": ["string", "null"] }
+  },
+  "additionalProperties": false
+}
