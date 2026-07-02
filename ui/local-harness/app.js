@@ -19,13 +19,26 @@ async function api(path, options = {}) {
 }
 
 function showError(error) {
-  byId("errorTitle").textContent = `Could not ${error.action || "complete action"}.`;
-  byId("errorMessage").textContent = error.message;
-  byId("errorRetry").textContent = error.retry || "Refresh and retry safely.";
+  const message = typeof error?.message === "string" && error.message.trim()
+    ? error.message
+    : "An unexpected local harness error occurred.";
+  const action = typeof error?.action === "string" && error.action.trim()
+    ? error.action
+    : "complete the requested action";
+  const retry = typeof error?.retry === "string" && error.retry.trim()
+    ? error.retry
+    : "Refresh and retry safely.";
+  byId("errorTitle").textContent = `Could not ${action}.`;
+  byId("errorMessage").textContent = message;
+  byId("errorRetry").textContent = retry;
   byId("errorBanner").hidden = false;
 }
 
-function clearError() { byId("errorBanner").hidden = true; }
+function clearError() {
+  byId("errorBanner").hidden = true;
+  byId("errorMessage").textContent = "";
+  byId("errorRetry").textContent = "";
+}
 
 function setBusy(busy) {
   byId("createSession").disabled = busy;
@@ -59,7 +72,7 @@ function renderSessions() {
     const updated = document.createElement("span");
     updated.textContent = formatTime(session.updated_at);
     button.append(title, detail, updated);
-    button.addEventListener("click", () => selectSession(session.session_id));
+    button.addEventListener("click", () => selectSession(session.session_id).catch(showError));
     list.append(button);
   }
 }
@@ -82,6 +95,7 @@ async function refreshSessions(preferredId = state.selectedSession?.session_id) 
   } else {
     resetRunDisplay();
   }
+  clearError();
 }
 
 async function selectSession(sessionId) {
@@ -93,10 +107,15 @@ async function selectSession(sessionId) {
   setBusy(false);
   renderSessions();
   if (session.latest_run_id) {
-    await loadRun(session.latest_run_id);
+    try {
+      await loadRun(session.latest_run_id);
+    } catch (error) {
+      renderResumeError(error);
+    }
   } else {
     resetRunDisplay();
   }
+  clearError();
 }
 
 function resetRunDisplay() {
@@ -107,6 +126,18 @@ function resetRunDisplay() {
   renderArtifacts([]);
   byId("exportRun").classList.add("disabled");
   byId("exportRun").removeAttribute("href");
+}
+
+function renderResumeError(error) {
+  resetRunDisplay();
+  const message = typeof error?.message === "string" && error.message.trim()
+    ? error.message
+    : "The latest run could not be loaded.";
+  byId("runStatus").textContent = "Resume unavailable";
+  byId("currentStep").textContent = "Load latest run";
+  byId("runError").textContent = message;
+  byId("eventTimeline").textContent = "The session is available, but its latest run is incomplete or missing. Refresh or retry the mock workflow.";
+  byId("artifactList").textContent = "Artifacts from the latest run are unavailable. No local files were changed.";
 }
 
 function renderStatus(status) {
@@ -205,6 +236,7 @@ async function previewArtifact(artifact) {
     byId("copyArtifact").disabled = false;
     byId("downloadArtifact").href = artifactUrl(artifact.artifact_id, true);
     byId("downloadArtifact").classList.remove("disabled");
+    clearError();
   } catch (error) { showError(error); }
 }
 
@@ -216,6 +248,7 @@ async function loadRun(runId) {
   renderArtifacts(run.artifacts);
   byId("exportRun").href = `/api/sessions/${encodeURIComponent(state.selectedSession.session_id)}/runs/${encodeURIComponent(runId)}/export`;
   byId("exportRun").classList.remove("disabled");
+  clearError();
 }
 
 async function createSession(event) {
@@ -234,6 +267,7 @@ async function createSession(event) {
   try {
     const session = await api("/api/sessions", { method: "POST", body: JSON.stringify(body) });
     await refreshSessions(session.session_id);
+    clearError();
   } catch (error) {
     showError(error);
   } finally { setBusy(false); }
@@ -252,6 +286,7 @@ async function runWorkflow() {
     renderEvents(run.events);
     renderArtifacts(run.artifacts);
     await refreshSessions(state.selectedSession.session_id);
+    clearError();
   } catch (error) {
     showError(error);
     byId("runStatus").textContent = "Failed";
@@ -280,7 +315,7 @@ async function checkHealth() {
   } catch (error) {
     badge.textContent = "Server unavailable";
     badge.className = "health bad";
-    showError(error);
+    throw error;
   }
 }
 
@@ -301,4 +336,5 @@ byId("copyArtifact").addEventListener("click", async () => {
   }
 });
 
-Promise.all([checkHealth(), refreshSessions()]).catch(showError);
+checkHealth().catch(showError);
+refreshSessions().catch(showError);

@@ -436,6 +436,9 @@ class HarnessHandler(BaseHTTPRequestHandler):
         raise ApiError(HTTPStatus.NOT_FOUND, "API endpoint not found.", "route request", "Refresh the page and retry.")
 
     def serve_static(self, parts: list[str]) -> None:
+        if parts == ["favicon.ico"]:
+            self.send_bytes(b"", "image/x-icon", HTTPStatus.NO_CONTENT)
+            return
         relative = Path("index.html") if not parts else Path(*parts)
         candidate = (STATIC_ROOT / relative).resolve()
         if STATIC_ROOT not in candidate.parents or not candidate.is_file():
