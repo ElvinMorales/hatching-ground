@@ -37,7 +37,7 @@ REQUIRED_FILES = [
     "scripts/smoke_test_local_harness.py",
     "evals/rubric.md", "evals/cases.jsonl",
     "docs/setup.md", "docs/usage.md", "docs/maintenance.md",
-    "docs/first-usable-product-plan.md",
+    "docs/first-usable-product-plan.md", "docs/ui-harness-taxonomy-notes.md",
     "scripts/validate_scaffold.py",
     # Synthetic end-to-end example pack
     "examples/README.md", "examples/synthetic-clutch.md",
@@ -93,6 +93,13 @@ CONTENT_CHECKS = {
     "docs/ui-harness.md": ["local-first", "network calls", "artifacts/private/"],
     "docs/first-usable-product-plan.md": ["normal-use copy/paste relay", "Mock Mode", "Acceptance Criteria"],
     "docs/local-web-harness.md": ["127.0.0.1", "full_architecture", "local/harness/", "Provider mode remains deferred"],
+    "docs/ui-harness-taxonomy-notes.md": [
+        "UI harness", "artifact bundle", "Prompts and interfaces", "State",
+        "Outputs and schemas", "Guardrails and governance",
+        "Evaluation and observability", "Runtime and deployment",
+        "static prompt bridge", "local web harness", "runtime", "taxonomy repo",
+        "Public/Private Boundary", "Proposed taxonomy update packet",
+    ],
     "ui/local-harness/README.md": ["standard-library", "/api/", "no external", "local/harness/"],
     "templates/full-agent-architecture.md": [
         "UI Harness Recommendation", "Taxonomy Artifact Map",
@@ -471,6 +478,32 @@ def main() -> int:
         for needle in needles:
             if needle.casefold() not in content:
                 failures.append(f"{name}: missing required content: {needle!r}")
+
+    handoff_name = "docs/ui-harness-taxonomy-notes.md"
+    handoff_path = ROOT / handoff_name
+    try:
+        handoff_text = handoff_path.read_text(encoding="utf-8")
+        prohibited_handoff_patterns = {
+            "OpenAI API key marker": re.compile(r"\bOPENAI_API_KEY\b", re.IGNORECASE),
+            "Anthropic API key marker": re.compile(r"\bANTHROPIC_API_KEY\b", re.IGNORECASE),
+            "secret-like API key": re.compile(
+                r"(?i)(?:api[_-]?key|access[_-]?token|password|secret)\s*[:=]\s*['\"]?[A-Za-z0-9+/=_-]{12,}"
+            ),
+            "provider API key pattern": re.compile(
+                r"\b(?:sk-ant-[A-Za-z0-9_-]{16,}|sk-[A-Za-z0-9_-]{20,})\b"
+            ),
+            "machine-specific Windows path": re.compile(r"(?i)\b[a-z]:\\users\\[^\s\\]+"),
+            "machine-specific Unix home path": re.compile(r"/(?:home|users)/[^/\s]+"),
+            "private log/state/memory example": re.compile(
+                r"(?i)\bprivate[- ](?:log|state|memory)[- ]example\b"
+            ),
+        }
+        for description, pattern in prohibited_handoff_patterns.items():
+            if pattern.search(handoff_text):
+                failures.append(f"{handoff_name}: possible {description}")
+    except OSError as exc:
+        if handoff_name not in missing:
+            failures.append(f"{handoff_name}: unreadable: {exc}")
 
     try:
         ignore_lines = {
