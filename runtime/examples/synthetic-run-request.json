@@ -1,0 +1,25 @@
+{
+  "request_id": "request-garden-full-architecture",
+  "session_id": "session-garden-demo",
+  "run_id": "run-garden-full-architecture",
+  "agent_id": "hatching-ground-mock",
+  "workflow": "full_architecture",
+  "runtime_mode": "mock",
+  "created_at": "2026-01-15T14:00:00Z",
+  "context": {
+    "idea_name": "Garden Note Formatter",
+    "hatch_gate_result": "pass",
+    "architecture_brief_summary": "Format fictional garden notes into consistent, reviewable Markdown without integrations or automation.",
+    "constraints": [
+      "Use synthetic notes only",
+      "Stay local and file-first",
+      "Require human review before using an artifact"
+    ],
+    "desired_artifact_type": "full_architecture"
+  },
+  "privacy_mode": "synthetic-public-safe",
+  "output_preferences": {
+    "format": "markdown",
+    "filename": "full-agent-architecture.md"
+  }
+}

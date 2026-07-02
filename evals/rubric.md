@@ -39,6 +39,29 @@ Judge architecture and planning against the target product while preserving the 
 
 Fail vague plans that do not define ownership boundaries, data objects, privacy behavior, mock mode, phased implementation, and acceptance criteria. Also fail any proposal that removes the static fallback or expands runtime scope before a separately reviewed implementation issue.
 
+## Mock runtime quality criteria
+
+Pass only when the local adapter completes its synthetic golden path with the standard library and no key, provider SDK, network, or private input.
+
+### Good behavior
+
+- Emits structured, concise, user-visible events rather than raw logs, memory, or state snapshots.
+- Writes compatible run status and artifact metadata plus at least one reviewable Markdown artifact.
+- Stores generated sessions, runs, events, and artifacts only below ignored `local/` folders.
+- Uses deterministic, synthetic, public-safe tracked requests and results.
+- Keeps events, run status, session records, memory, state, and raw logs conceptually distinct.
+- Documents the future provider boundary, cancellation, failures, usage visibility, credentials, and approvals without implementing provider mode.
+- Requires human review before consequential use of generated artifacts.
+
+### Bad behavior (critical failures)
+
+- Adds a provider SDK, real model call, API key requirement, or network dependency to the golden path.
+- Writes or commits generated output in tracked paths, including real sessions, event streams, logs, memory, or state.
+- Adds a backend, web UI rebuild, database, deployment, broad filesystem access, or multi-agent orchestration.
+- Logs secrets, full private inputs, provider prompts, or raw provider responses.
+- Makes provider mode required or claims deferred provider behavior is implemented.
+- Uses real personal, family, health, financial, employer, or private project data in fixtures.
+
 ## Full architecture quality criteria
 
 Evaluate a full architecture only for a hatchling that passed or conditionally passed the hatch gate. Pass only when every good-behavior criterion is present and no critical failure is present.

@@ -2,7 +2,7 @@
 
 Hatching Ground is a private-first, file-first incubator for small personal agent ideas. It helps an individual builder turn rough inspiration into structured idea cards, compare a clutch of candidates, select a practical first usable product, and prepare an architecture brief, full architecture, and Codex handoff.
 
-This version is an inspectable documentation scaffold. It contains prompts, workflows, templates, JSON Schemas, guardrails, lightweight evaluations, and a static UI prototype. It does not build, deploy, or operate agents.
+This version is an inspectable documentation scaffold with a deterministic local mock runtime adapter. It contains prompts, workflows, templates, JSON Schemas, guardrails, lightweight evaluations, and a static UI prototype. The mock adapter proves one synthetic workflow; it does not call providers, deploy, or operate real agents.
 
 ## Who it is for
 
@@ -29,10 +29,15 @@ The smallest useful version is a local folder you can use with a writing or codi
 5. For the selected idea, follow [the hatching workflow](workflows/hatching-workflow.md).
 6. After the hatch gate and brief, follow [the full architecture workflow](workflows/full-architecture.md).
 7. Run `python scripts/validate_scaffold.py` to validate this shared scaffold.
+8. Optionally run `python scripts/run_mock_runtime.py --request runtime/examples/synthetic-run-request.json --out local/runs/synthetic-demo --reset` to exercise the synthetic runtime contract.
 
 > **Privacy warning:** Never commit real personal data, private notes, memory, state, logs, credentials, employer information, or machine-specific paths. Keep working material in ignored local/private folders. Repository examples must remain synthetic.
 
 See [setup](docs/setup.md), [usage](docs/usage.md), and [maintenance](docs/maintenance.md) for details.
+
+## Mock runtime adapter
+
+The standard-library mock runner creates a local session record, structured events, run status, artifact metadata, a 12-section synthetic Markdown architecture, and a portable result. Outputs stay in ignored `local/` storage. This is a development/testing capability for the future local web harness, not the final UI, a backend, or a provider integration. See [the runtime guide](runtime/mock-runner.md).
 
 ## UI Harness
 

@@ -1,0 +1,12 @@
+# Documentation-only example. The Python mock runner does not parse YAML.
+runtime_mode: mock
+local_storage_root: local
+supported_workflows:
+  - full_architecture
+provider_mode:
+  implemented: false
+  note: "Provider calls and credentials are intentionally deferred."
+privacy:
+  tracked_examples: synthetic-public-safe-only
+  runtime_files: "Keep under ignored local/ folders."
+  secrets: "Never commit secrets; no secret is required for mock mode."

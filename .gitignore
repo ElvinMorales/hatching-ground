@@ -6,7 +6,12 @@ __pycache__/
 .pytest_cache/
 .venv/
 node_modules/
-local/
+local/*
+!local/README.md
+local/sessions/
+local/artifacts/
+local/runs/
+.tmp/
 private/
 data/private/
 data/local/
