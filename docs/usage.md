@@ -31,3 +31,11 @@ python scripts/run_mock_runtime.py --request runtime/examples/synthetic-run-requ
 Review `session.json`, `events.jsonl`, `run-status.json`, `artifacts.json`, `runtime-result.json`, and the Markdown file below `local/runs/synthetic-demo/`. These files are ignored local output and must not be committed. The runner is the mock execution layer a future local web harness can consume; it is not the web harness or a model provider.
 
 Delete only the reviewed `local/runs/synthetic-demo/` directory when finished. Mock fixtures must be synthetic and public-safe; real private context, secrets, memory, state, and raw logs do not belong in tracked files.
+
+## Use the local web harness
+
+For the supported mock workflow, start the local server and keep the full interaction in one browser interface:
+
+`open local harness -> create session -> provide context once -> run mock workflow -> inspect events and status -> preview artifact -> export artifact`
+
+Run `python scripts/serve_local_harness.py --host 127.0.0.1 --port 8765`, open `http://127.0.0.1:8765/`, and use only synthetic public-safe context. Refreshing the browser reloads sessions from ignored local server files. Normal use of this supported flow has no prompt/output copy/paste relay. See [the detailed guide](local-web-harness.md).

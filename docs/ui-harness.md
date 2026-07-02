@@ -1,58 +1,27 @@
 # UI Harness
 
-## Current static prototype/manual bridge
+## Connected local mock harness
 
-`ui/hatching-ground.html` is the currently implemented interface. It is a self-contained `file://` page that assembles prompts, accepts pasted model output, validates output heuristically, and exports Markdown. It has no backend, persistence, network calls, external dependencies, model API calls, or broad filesystem access.
+`ui/local-harness/` is the implemented first mock-connected interface. Start it through `python scripts/serve_local_harness.py --host 127.0.0.1 --port 8765` and open `http://127.0.0.1:8765/`.
 
-The page is useful for testing the artifact workflow and as a transparent manual fallback. Because the user must relay prompts and model output, it is not the target first usable product.
+For the synthetic `full_architecture` workflow, one local interface creates/resumes operational sessions, collects context, invokes the mock runtime adapter, renders user-visible events and run status, lists artifacts, previews Markdown, and offers Markdown/JSON export. Normal use of this supported flow no longer requires a copy/paste relay. Data stays in ignored `local/harness/`; it is operational state, not memory.
 
-## Target local web harness
+The harness is local-first and makes no external network calls. It uses browser-native HTML/CSS/JavaScript and a Python standard-library server. Provider mode is deferred and there are no provider settings, API-key fields, SDKs, or model calls.
 
-The planned first usable product is a local-first, session-based web harness. In one local interface, a user should be able to create or resume a session, select a workflow, provide privacy-reviewed context, run through a mock or local runtime adapter, inspect the transcript and status, resolve visible approvals, manage generated artifacts, and export Markdown.
+## Static prototype/manual fallback
 
-Normal use will not require copying a prompt to another interface and pasting output back. The architecture and phased boundaries are defined in [the first usable product plan](first-usable-product-plan.md). These capabilities are planned, not currently implemented.
+`ui/hatching-ground.html` remains available as a self-contained `file://` page. It assembles prompts, accepts manually pasted model output, validates heuristically, and exports Markdown without a server or persistence. Use it for workflow testing or when the connected harness is unavailable.
 
-## What changes in the first usable product
+The static page's prompt/output relay is a fallback, not the target normal interaction. It has no backend, network calls, external dependencies, model API calls, or broad filesystem access.
 
-- Durable local session creation, resume, and deletion
-- Workflow and context intake inside a session
-- Mock-adapter and runtime-adapter execution boundary
-- User-visible transcript and structured event stream
-- Current run status, progress, errors, and cancellation
-- Visible approval objects with safe defaults
-- Artifact drawer with previews and Markdown export
-- Local private persistence outside tracked repository paths
-- Provider configuration isolated behind a future adapter boundary
+## Current and deferred capability
 
-The harness owns presentation, local interaction, and export. The future runtime owns workflow execution and structured event/status emission. Neither layer silently approves consequential actions.
+The connected harness currently supports only one synthetic, public-safe mock `full_architecture` workflow. The broader first usable product still needs additional incubation workflows, UI-visible approval resolution, cancellation, explicit deletion controls, migration and recovery behavior, and private-data hardening.
 
-## What stays deferred
-
-- Runtime adapter and provider implementation
-- Provider SDKs and model calls
-- Database choice, cloud sync, and multi-device storage
-- OpenClaw Gateway and VPS deployment
-- Multi-agent orchestration, scheduling, messaging, and monitoring
-- Full authentication or multi-user access
-- Live memory, memory proposal inboxes, and state snapshots
-- Broad filesystem access and write-capable tools
-
-## Manual fallback instructions
-
-Use the current page when testing workflows or when the future local harness is unavailable:
-
-1. Open `ui/hatching-ground.html` directly in a browser.
-2. Select a workflow and enter only public-safe or appropriately local context.
-3. Generate and copy the prompt.
-4. Paste it into the model interface you chose.
-5. Paste the model response into the page.
-6. Run the relevant heuristic validation and review warnings.
-7. Download the Markdown artifact.
-
-The fallback page does not send or retain content automatically. Opening it requires no server.
+Provider adapters, real model runs, database/cloud sync, OpenClaw Gateway, deployment, auth, multi-agent orchestration, scheduling, messaging, monitoring, live memory/state, and broad filesystem or write-capable tools remain deferred.
 
 ## Artifact export and privacy
 
-Recommended exports include `idea-card.md`, `clutch-score.md`, `architecture-brief.md`, `full-agent-architecture.md`, `codex-handoff.md`, and `public-private-checklist.md`.
+The artifact drawer shows title, filename, type, privacy classification, and commit recommendation. It can preview/copy/download Markdown and export a run bundle as JSON. Export does not make content safe to commit.
 
-Save private outputs in an ignored `local/` or `artifacts/private/` directory. Never commit real personal, health, financial, employer, credential, memory, state, transcript, or event-stream data. Tracked examples must stay synthetic and public-safe.
+Use only synthetic public-safe data in the implemented demo path. Never commit real personal, health, financial, employer, credential, memory, state, transcript, event-stream, or generated session data. Private outputs must remain in ignored `local/` or `artifacts/private/` paths. See [the local web harness guide](local-web-harness.md) for operation and troubleshooting.

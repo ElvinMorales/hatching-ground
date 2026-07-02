@@ -62,6 +62,31 @@ Pass only when the local adapter completes its synthetic golden path with the st
 - Makes provider mode required or claims deferred provider behavior is implemented.
 - Uses real personal, family, health, financial, employer, or private project data in fixtures.
 
+## Local web harness quality criteria
+
+Pass only when the supported synthetic `full_architecture` workflow completes end to end through the local mock adapter and all good behavior is present.
+
+### Good behavior
+
+- Creates and resumes operational sessions through ignored `local/harness/` files without using browser storage as durable state.
+- Routes execution through `scripts/run_mock_runtime.py` using a subprocess argument list and schema-compatible synthetic requests.
+- Completes the supported mock workflow without manual prompt/output relay.
+- Renders structured events as user-visible progress, current run status, progress, pending approval reference, and bounded errors.
+- Lists typed artifacts in an artifact drawer and supports Markdown preview, copy/download, and JSON run export.
+- Serves only `ui/local-harness/`, validates IDs, reads artifacts through manifest metadata, and prevents arbitrary file access or path traversal.
+- Keeps the static `ui/hatching-ground.html` prototype/manual fallback available.
+- Uses browser-native HTML/CSS/JavaScript and Python's standard library with no external resources.
+- Keeps provider mode visibly deferred and requires human review before consequential artifact use.
+
+### Bad behavior (critical failures)
+
+- Reverts to prompt/output copy/paste relay as normal use of the supported mock workflow.
+- Adds provider SDKs, real model calls, API-key fields, external CDN scripts/fonts, or network dependencies.
+- Stores generated/private sessions in tracked files, writes outside ignored local storage, or commits runtime output.
+- Reads arbitrary files, accepts traversal components, shell-interpolates input, or exposes stack traces by default.
+- Adds a database, production backend framework, deployment, auth, messaging, scheduling, monitoring, or multi-agent orchestration.
+- Claims provider mode or private production support is implemented.
+
 ## Full architecture quality criteria
 
 Evaluate a full architecture only for a hatchling that passed or conditionally passed the hatch gate. Pass only when every good-behavior criterion is present and no critical failure is present.

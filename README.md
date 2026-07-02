@@ -2,7 +2,7 @@
 
 Hatching Ground is a private-first, file-first incubator for small personal agent ideas. It helps an individual builder turn rough inspiration into structured idea cards, compare a clutch of candidates, select a practical first usable product, and prepare an architecture brief, full architecture, and Codex handoff.
 
-This version is an inspectable documentation scaffold with a deterministic local mock runtime adapter. It contains prompts, workflows, templates, JSON Schemas, guardrails, lightweight evaluations, and a static UI prototype. The mock adapter proves one synthetic workflow; it does not call providers, deploy, or operate real agents.
+This version is an inspectable documentation scaffold with a deterministic local mock runtime adapter and a mock-connected local web harness. It contains prompts, workflows, templates, JSON Schemas, guardrails, lightweight evaluations, and the static UI prototype/manual fallback. It does not call providers, deploy, or operate real agents.
 
 ## Who it is for
 
@@ -30,24 +30,26 @@ The smallest useful version is a local folder you can use with a writing or codi
 6. After the hatch gate and brief, follow [the full architecture workflow](workflows/full-architecture.md).
 7. Run `python scripts/validate_scaffold.py` to validate this shared scaffold.
 8. Optionally run `python scripts/run_mock_runtime.py --request runtime/examples/synthetic-run-request.json --out local/runs/synthetic-demo --reset` to exercise the synthetic runtime contract.
+9. Run `python scripts/serve_local_harness.py --host 127.0.0.1 --port 8765` and open `http://127.0.0.1:8765/` for the connected mock workflow.
 
 > **Privacy warning:** Never commit real personal data, private notes, memory, state, logs, credentials, employer information, or machine-specific paths. Keep working material in ignored local/private folders. Repository examples must remain synthetic.
 
 See [setup](docs/setup.md), [usage](docs/usage.md), and [maintenance](docs/maintenance.md) for details.
 
-## Mock runtime adapter
+## Local mock harness
 
-The standard-library mock runner creates a local session record, structured events, run status, artifact metadata, a 12-section synthetic Markdown architecture, and a portable result. Outputs stay in ignored `local/` storage. This is a development/testing capability for the future local web harness, not the final UI, a backend, or a provider integration. See [the runtime guide](runtime/mock-runner.md).
+The standard-library server and dependency-free frontend support session create/resume, synthetic context intake, mock execution, events, run status, an artifact drawer, Markdown preview/download, and JSON export for `full_architecture`. Outputs stay in ignored `local/harness/` storage. Provider mode remains visibly deferred. See [the local web harness guide](docs/local-web-harness.md).
 
 ## UI Harness
 
-Hatching Ground currently includes a self-contained static UI prototype/manual fallback. It assembles paste-ready prompts, accepts pasted model output, validates it heuristically, and exports Markdown artifacts. It runs from `file://` with no backend, network calls, persistence, or model API keys. This page is useful for workflow testing and fallback use, but its manual copy/paste relay is not the final target interaction.
+Hatching Ground also preserves a self-contained static UI prototype/manual fallback. It assembles paste-ready prompts, accepts pasted model output, validates it heuristically, and exports Markdown artifacts. It runs from `file://` with no server, network calls, persistence, or model API keys.
 
 The full architecture template is a design output after the hatch gate, not an implemented runtime or UI. It records the first usable product, artifact map, interface decision, privacy boundaries, and implementation handoff.
 
-The target first usable product is a local-first, session-based web harness. It will support resumable local sessions, context intake, adapter-backed model runs, a transcript, progress and status, approvals, an artifact drawer, and Markdown export in one interface, without a normal-use copy/paste relay. This is a planned architecture, not an implemented web app. See [the first usable product plan](docs/first-usable-product-plan.md).
+The first mock-connected step of the target local, session-based product is implemented for one synthetic workflow. Broader workflows, provider execution, approvals, and production/private support remain deferred. See [the first usable product plan](docs/first-usable-product-plan.md).
 
 - Open [`ui/hatching-ground.html`](ui/hatching-ground.html) in a browser to use the current prototype/manual fallback.
+- Start `scripts/serve_local_harness.py` to use [`ui/local-harness/`](ui/local-harness/) with the mock runtime.
 - See [`ui-harness/README.md`](ui-harness/README.md) for the expanded harness artifact set.
 - See [`docs/ui-harness.md`](docs/ui-harness.md) for current fallback instructions and the target distinction.
 

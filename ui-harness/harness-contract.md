@@ -1,6 +1,6 @@
 # Hatching Ground UI Harness Contract
 
-This contract distinguishes the current implemented page from the planned first usable local harness. The target section is an architecture boundary, not a claim of implementation.
+This contract distinguishes the static fallback, the implemented mock-connected local harness, and later provider/hardening boundaries.
 
 ## Layer 1: Current prototype/manual fallback contract
 
@@ -10,28 +10,28 @@ It does not make model API calls, persist durable memory or session state, run b
 
 This layer remains supported for workflow testing and fallback use.
 
-## Layer 2: Target first usable local harness contract
+## Layer 2: Implemented local mock harness contract
 
-The planned local harness presents one end-to-end interface and removes the normal-use copy/paste relay. Its responsibilities are:
+The local harness presents one end-to-end interface for the synthetic `full_architecture` mock workflow and removes the normal-use copy/paste relay for that flow. Its current responsibilities are:
 
-- **Sessions:** create, resume, list, export, and delete private local sessions with stable IDs.
+- **Sessions:** create, resume, and list synthetic local operational sessions with stable IDs; export applies to run bundles, and UI deletion remains deferred.
 - **Messages and transcript:** render user context, structured assistant summaries, approvals, and errors without exposing raw provider logs.
 - **Context intake:** collect the minimum workflow inputs with privacy warnings and explicit review.
 - **Event stream:** consume typed, user-visible events conforming to `events.schema.json`.
-- **Run status:** show workflow step, progress, pending approval, artifacts, completion, cancellation, and bounded errors.
+- **Run status:** show workflow step, progress, pending approval reference, artifacts, completion, and bounded errors. Cancellation remains deferred.
 - **Artifact drawer:** list, preview, classify, and export typed Markdown artifacts.
-- **Local session persistence:** retain resumable sessions in application-scoped local storage outside tracked repository paths, with deletion and migration behavior.
+- **Local session persistence:** retain resumable operational sessions below ignored `local/harness/`; manual deletion is documented, while UI deletion and migrations remain deferred.
 - **Mock mode:** execute deterministic, public-safe sample runs without network access, credentials, or private input.
-- **Runtime adapter boundary:** send validated run requests to a narrow local adapter and receive events, status, approvals, and artifacts. Runtime implementation is deferred.
-- **Provider configuration boundary:** offer explicit opt-in configuration while keeping credentials out of tracked files, sessions, transcripts, events, and exports. Provider implementation is deferred.
+- **Runtime adapter boundary:** send schema-compatible run requests to the local mock adapter and receive events, status, and artifacts.
+- **Provider configuration boundary:** provider configuration and implementation are deferred; the UI exposes no API-key or provider fields.
 
-Approvals are UI-visible objects. The harness displays the requested action, reason, risk, data involved, choices, and safe default; it never treats silence as approval.
+The mock workflow emits no consequential approval request. Future approvals must be UI-visible objects that expose action, reason, risk, data involved, choices, and safe default; silence is never approval.
 
 ## Runtime boundary
 
-The future Hatching Ground runtime, not the UI, executes workflows, invokes a mock or configured provider adapter, enforces workflow gates, emits typed events and status, and returns artifacts. Provider transport, retries, credentials, and usage controls remain behind that adapter.
+The Hatching Ground mock runtime, not the UI, executes the supported workflow, enforces its input boundary, emits typed events and status, and returns artifacts. Future provider transport, retries, credentials, and usage controls remain behind the adapter boundary.
 
-This planning issue does not add the runtime adapter, backend, local server, provider calls, SDKs, database, model configuration, or persistent session files.
+The connected harness adds only a loopback Python standard-library server and ignored operational session files. It adds no provider calls, SDKs, database, model configuration, production platform, or tracked session output.
 
 ## Privacy and scope boundary
 

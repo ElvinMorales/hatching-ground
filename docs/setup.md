@@ -22,7 +22,17 @@ No environment variables, keys, packages, or network access are required:
 python scripts/run_mock_runtime.py --request runtime/examples/synthetic-run-request.json --out local/runs/synthetic-demo --reset
 ```
 
-The command writes only below ignored `local/` storage. Confirm with `git status --short --ignored`; never commit the generated session, events, status, or artifacts. This command boundary is intended for a future local web harness, which is not implemented here.
+The command writes only below ignored `local/` storage. Confirm with `git status --short --ignored`; never commit the generated session, events, status, or artifacts.
+
+## Run the local web harness
+
+No package install is required. Start the standard-library server:
+
+```sh
+python scripts/serve_local_harness.py --host 127.0.0.1 --port 8765
+```
+
+Open `http://127.0.0.1:8765/`. The connected harness runs only the synthetic `full_architecture` mock workflow and stores operational session/run output under ignored `local/harness/`. Provider mode remains deferred. See [the local web harness guide](local-web-harness.md).
 
 ## Secrets and private data
 

@@ -34,6 +34,7 @@ REQUIRED_FILES = [
     "runtime/examples/synthetic-run-request.json",
     "runtime/examples/synthetic-runtime-result.json",
     "local/README.md", "scripts/run_mock_runtime.py",
+    "scripts/smoke_test_local_harness.py",
     "evals/rubric.md", "evals/cases.jsonl",
     "docs/setup.md", "docs/usage.md", "docs/maintenance.md",
     "docs/first-usable-product-plan.md",
@@ -47,6 +48,11 @@ REQUIRED_FILES = [
     "ui-harness/examples/synthetic-session.json",
     "ui-harness/examples/sanitized-event-stream.jsonl",
     "ui/hatching-ground.html", "docs/ui-harness.md",
+    # Connected local mock harness
+    "scripts/serve_local_harness.py", "ui/local-harness/index.html",
+    "ui/local-harness/app.js", "ui/local-harness/styles.css",
+    "ui/local-harness/README.md", "ui/local-harness/example-session-summary.json",
+    "docs/local-web-harness.md",
 ]
 
 EVAL_FIELDS = {
@@ -65,6 +71,7 @@ IGNORE_RULES = {
     "data/private/", "data/local/", "memory/private/", "state/private/",
     "logs/", "runtime/private/", "runtime/logs/", "*.log",
     "ui/local/", "ui-harness/local/", "sessions/private/", "artifacts/private/",
+    "local/harness/",
 }
 
 CONTENT_CHECKS = {
@@ -78,6 +85,8 @@ CONTENT_CHECKS = {
     "ui-harness/harness-contract.md": ["model API calls", "durable memory", "broad filesystem access"],
     "docs/ui-harness.md": ["local-first", "network calls", "artifacts/private/"],
     "docs/first-usable-product-plan.md": ["normal-use copy/paste relay", "Mock Mode", "Acceptance Criteria"],
+    "docs/local-web-harness.md": ["127.0.0.1", "full_architecture", "local/harness/", "Provider mode remains deferred"],
+    "ui/local-harness/README.md": ["standard-library", "/api/", "no external", "local/harness/"],
     "templates/full-agent-architecture.md": [
         "UI Harness Recommendation", "Taxonomy Artifact Map",
         "Codex Implementation Prompt", "Powering and Usage Plan",
@@ -351,6 +360,35 @@ def main() -> int:
     except OSError as exc:
         failures.append(f".gitignore: unreadable: {exc}")
 
+    frontend_files = (
+        "ui/local-harness/index.html",
+        "ui/local-harness/app.js",
+        "ui/local-harness/styles.css",
+    )
+    external_resource = re.compile(
+        r"(?i)(?:src|href)\s*=\s*['\"]\s*(?:https?:)?//|url\(\s*['\"]?(?:https?:)?//|@import"
+    )
+    for name in frontend_files:
+        try:
+            content = (ROOT / name).read_text(encoding="utf-8")
+            if external_resource.search(content):
+                failures.append(f"{name}: external script, stylesheet, font, or CDN resource found")
+        except OSError as exc:
+            failures.append(f"{name}: unreadable: {exc}")
+
+    try:
+        example_summary = json.loads(
+            (ROOT / "ui/local-harness/example-session-summary.json").read_text(encoding="utf-8")
+        )
+        required_summary = {
+            "session_id", "title", "workflow", "created_at", "updated_at",
+            "latest_run_id", "artifact_count", "status",
+        }
+        if not isinstance(example_summary, dict) or required_summary - example_summary.keys():
+            failures.append("ui/local-harness/example-session-summary.json: missing session summary fields")
+    except (OSError, json.JSONDecodeError) as exc:
+        failures.append(f"ui/local-harness/example-session-summary.json: invalid JSON: {exc}")
+
     event_schema = json.loads((ROOT / "ui-harness/events.schema.json").read_text(encoding="utf-8"))
     status_schema = json.loads((ROOT / "ui-harness/run-status.schema.json").read_text(encoding="utf-8"))
     artifact_schema = json.loads((ROOT / "ui-harness/artifact.schema.json").read_text(encoding="utf-8"))
@@ -434,12 +472,24 @@ def main() -> int:
     except (OSError, json.JSONDecodeError) as exc:
         failures.append(f"mock runtime validation error: {exc}")
 
+    smoke_command = [sys.executable, str(ROOT / "scripts/smoke_test_local_harness.py")]
+    smoke = subprocess.run(
+        smoke_command, cwd=ROOT, capture_output=True, text=True, check=False, timeout=30
+    )
+    if smoke.returncode != 0:
+        failures.append(
+            "local harness smoke test failed: "
+            + (smoke.stderr.strip() or smoke.stdout.strip() or "unknown error")
+        )
+
     obvious_secret = re.compile(
         r"(?i)(api[_-]?key|token|password)\s*[:=]\s*['\"]?[A-Za-z0-9+/=_-]{16,}"
     )
     for name in REQUIRED_FILES:
         path = ROOT / name
-        if not path.is_file() or path.suffix not in {".md", ".json", ".jsonl", ".example", ".py", ".yaml"}:
+        if not path.is_file() or path.suffix not in {
+            ".md", ".json", ".jsonl", ".example", ".py", ".yaml", ".html", ".css", ".js",
+        }:
             continue
         text = path.read_text(encoding="utf-8")
         if obvious_secret.search(text):
@@ -459,6 +509,8 @@ def main() -> int:
     print(f"PASS: {event_count} sanitized event records parse and contain required fields")
     print(f"PASS: {eval_count} JSONL eval cases parse and contain required fields")
     print("PASS: deterministic mock run emits contract-compatible files and 12 headings")
+    print("PASS: browserless local harness server/API smoke test")
+    print("PASS: local harness frontend has no external resource dependencies")
     print("PASS: required content and privacy-oriented ignore rules found")
     print("PASS: no obvious embedded secrets found (manual review still required)")
     return 0

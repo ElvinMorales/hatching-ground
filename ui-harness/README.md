@@ -1,6 +1,6 @@
 # UI Harness Artifacts
 
-This directory contains the versioned contracts for the current static prototype/manual fallback and the planned first usable local harness. The target architecture is described in [the first usable product plan](../docs/first-usable-product-plan.md); it is not implemented yet. See [the harness contract](harness-contract.md) for the two-layer boundary.
+This directory contains versioned contracts shared by the static prototype/manual fallback and the mock-connected local harness. The implemented frontend lives in `../ui/local-harness/`; the broader target architecture is described in [the first usable product plan](../docs/first-usable-product-plan.md). See [the harness contract](harness-contract.md) for the layers and remaining boundaries.
 
 ## Current interface
 
@@ -18,11 +18,11 @@ This directory contains the versioned contracts for the current static prototype
 - `examples/synthetic-session.json`: existing synthetic example for the static/manual workflow.
 - `examples/sanitized-event-stream.jsonl`: public-safe mock event sequence for the planned harness.
 
-These schemas are practical planning baselines, not frozen runtime protocols.
+These schemas are practical contract baselines, not frozen runtime protocols. The local harness consumes the compatible event, run-status, and artifact records emitted by the mock adapter; its simple operational session record is documented separately.
 
-## Target interaction
+## Implemented mock interaction
 
-The planned local harness will support resumable sessions, context intake, a transcript, an event stream, run status, approvals, an artifact drawer, local private persistence, deterministic mock mode, and an adapter boundary for later provider use. Normal use will not require copying prompts and outputs between interfaces.
+The local harness supports resumable operational sessions, synthetic context intake, an event timeline, run status, an artifact drawer, ignored local persistence, deterministic mock execution, and Markdown/JSON export for `full_architecture`. Normal use of this supported workflow does not require copying prompts and outputs between interfaces. Approvals, private production support, additional workflows, and providers remain deferred.
 
 ## Privacy
 
