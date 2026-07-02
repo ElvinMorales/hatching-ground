@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hatching Ground Local Harness</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Local session-based harness</p>
+      <h1>Hatching Ground</h1>
+    </div>
+    <div class="mode-strip" aria-label="Runtime modes">
+      <span>Runtime <strong>mock</strong></span>
+      <span>Provider <strong>deferred</strong></span>
+      <span id="healthBadge" class="health">Checking server…</span>
+    </div>
+  </header>
+
+  <div id="errorBanner" class="error-banner" role="alert" hidden>
+    <strong id="errorTitle">Action failed</strong>
+    <span id="errorMessage"></span>
+    <span id="errorRetry"></span>
+    <button id="dismissError" type="button">Dismiss</button>
+  </div>
+
+  <main class="layout">
+    <aside class="sidebar" aria-label="Sessions">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">Operational state</p>
+          <h2>Sessions</h2>
+        </div>
+        <button id="refreshSessions" class="icon-button" type="button" title="Refresh sessions" aria-label="Refresh sessions">↻</button>
+      </div>
+      <button id="newSession" class="primary wide" type="button">New session</button>
+      <p class="helper">Sessions are local run state, not durable memory.</p>
+      <div id="sessionList" class="session-list" aria-live="polite"></div>
+    </aside>
+
+    <section class="workspace">
+      <section class="card intake-card">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Step 1</p>
+            <h2>Context intake</h2>
+          </div>
+          <span id="selectedSessionStatus" class="status-pill">No session</span>
+        </div>
+
+        <div class="privacy-warning">
+          <strong>Synthetic demo input only.</strong>
+          Use synthetic or local-private context only. Do not paste secrets, employer data, health/financial data, raw logs, memory, or state into tracked examples.
+        </div>
+
+        <form id="sessionForm">
+          <div class="field-grid">
+            <label>Workflow
+              <select id="workflow" name="workflow" disabled>
+                <option value="full_architecture">Full Architecture</option>
+              </select>
+            </label>
+            <label>Optional title
+              <input id="title" name="title" maxlength="120" placeholder="Garden Note Formatter">
+            </label>
+          </div>
+          <label>Idea name
+            <input id="ideaName" name="idea_name" required value="Garden Note Formatter">
+          </label>
+          <label>Hatch gate result
+            <select id="hatchGate" name="hatch_gate_result" required>
+              <option value="pass">Pass</option>
+              <option value="conditional-pass">Conditional pass</option>
+            </select>
+          </label>
+          <label>Architecture brief summary
+            <textarea id="briefSummary" name="architecture_brief_summary" rows="4" required>A fictional local tool formats synthetic garden notes into a consistent, reviewable structure.</textarea>
+          </label>
+          <label>Constraints <span class="muted">one per line</span>
+            <textarea id="constraints" name="constraints" rows="4" required>No network access
+Synthetic public-safe data only
+Human review before consequential use</textarea>
+          </label>
+          <div class="button-row">
+            <button id="createSession" class="primary" type="submit">Create session</button>
+            <button id="runWorkflow" class="accent" type="button" disabled>Run mock workflow</button>
+            <button id="retryRun" type="button" disabled>Retry run</button>
+            <button id="clearForm" type="button">Clear form</button>
+          </div>
+        </form>
+        <p class="helper">Provider mode is deferred. This harness currently runs mock mode only.</p>
+      </section>
+
+      <section class="run-grid">
+        <section class="card status-card">
+          <p class="eyebrow">Step 2</p>
+          <h2>Run status</h2>
+          <div class="progress-track" aria-label="Run progress"><div id="progressBar" class="progress-bar"></div></div>
+          <dl class="status-list">
+            <div><dt>Status</dt><dd id="runStatus">Not started</dd></div>
+            <div><dt>Current step</dt><dd id="currentStep">—</dd></div>
+            <div><dt>Progress</dt><dd id="progressPercent">0%</dd></div>
+            <div><dt>Pending approval</dt><dd id="pendingApproval">None</dd></div>
+            <div><dt>Error</dt><dd id="runError">None</dd></div>
+          </dl>
+        </section>
+
+        <section class="card transcript-card">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Step 3</p>
+              <h2>Event timeline</h2>
+            </div>
+            <span id="eventCount" class="muted">0 events</span>
+          </div>
+          <div id="eventTimeline" class="timeline empty-state">Run the mock workflow to see user-visible progress.</div>
+        </section>
+      </section>
+
+      <section class="card artifacts-card">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Step 4</p>
+            <h2>Artifact drawer</h2>
+          </div>
+          <a id="exportRun" class="button-link disabled" aria-disabled="true">Export run JSON</a>
+        </div>
+        <div class="artifact-layout">
+          <div id="artifactList" class="artifact-list empty-state">Generated artifacts will appear here.</div>
+          <div class="preview-panel">
+            <div class="preview-heading">
+              <h3 id="previewTitle">Markdown preview</h3>
+              <div>
+                <button id="copyArtifact" type="button" disabled>Copy</button>
+                <a id="downloadArtifact" class="button-link disabled" aria-disabled="true">Download Markdown</a>
+              </div>
+            </div>
+            <pre id="artifactPreview">Select an artifact to preview it.</pre>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
