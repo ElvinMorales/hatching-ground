@@ -10,7 +10,7 @@ Use Hatching Ground if you want to discover boring-but-useful personal agents, c
 
 ## Smallest useful version
 
-The MVP is a local folder you can use with a writing or coding assistant:
+The smallest useful version is a local folder you can use with a writing or coding assistant:
 
 1. Discover ideas with a starter prompt.
 2. Create one idea card per candidate.
