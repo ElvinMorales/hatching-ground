@@ -2,7 +2,7 @@
 
 ## 1. Current State
 
-Hatching Ground is an artifact-first documentation scaffold with prompts, workflows, templates, JSON Schemas, guardrails, evals, and a self-contained static HTML interface at `ui/hatching-ground.html`. The page runs from `file://`, assembles prompts, accepts pasted model output, performs heuristic validation, and downloads Markdown. It has no backend, network access, provider integration, or persistent browser storage.
+Hatching Ground is an artifact-first documentation scaffold with prompts, workflows, templates, JSON Schemas, guardrails, evals, a self-contained static HTML interface, and a standard-library mock runtime adapter. The adapter executes one deterministic synthetic `full_architecture` workflow through a local command boundary and writes contracts to ignored storage. The static page remains a manual fallback and is not connected to the adapter. Neither component has backend, network, provider, or persistent browser integration.
 
 ## 2. Why the Static UI Is a Prototype / Manual Fallback
 
@@ -14,7 +14,7 @@ The target product removes the normal-use copy/paste relay. Manual copy/paste re
 
 The first usable product is a local-first, session-based web harness in which one user can complete the Hatching Ground workflow in one local interface. It supports session creation and resume, workflow selection, context intake, a model run through a local runtime adapter or deterministic mock adapter, a transcript, progress and status updates, an artifact drawer, Markdown export, and local session persistence.
 
-This document defines the target architecture; none of those new runtime capabilities are implemented by this issue.
+This document defines the target architecture. Only the mock command boundary and local output records are implemented; session resume, the connected web UI, and provider mode remain future work.
 
 ## 4. Core User Workflow
 
@@ -36,9 +36,9 @@ The harness owns presentation and local interaction: session create/resume, work
 
 ## 6. Hatching Ground Runtime Responsibilities
 
-The future runtime owns workflow execution behind a narrow adapter: accepting a validated run request, invoking either the mock adapter or a configured provider adapter, emitting events and run status, returning typed artifacts, and reporting failures. It enforces workflow sequencing and human-review gates. Provider-specific credentials, transport, retries, and cost controls stay behind the adapter and never enter exported artifacts or tracked session examples.
+The runtime owns workflow execution behind a narrow adapter: accepting a validated run request, invoking an adapter, emitting events and run status, returning typed artifacts, and reporting failures. The current implementation supports deterministic mock execution for `full_architecture`. Provider-specific credentials, transport, retries, and cost controls stay behind the future provider adapter and never enter exported artifacts or tracked session examples.
 
-The runtime adapter itself, provider SDKs, backend server, and provider calls are deferred to later implementation issues.
+Provider SDKs, a backend server, and provider calls are deferred to later implementation issues.
 
 ## 7. Session Model
 
@@ -68,7 +68,7 @@ Real provider mode is a later opt-in capability behind the same runtime adapter 
 
 ## 13. Deferred Capabilities
 
-- Runtime and provider adapter implementation
+- Provider adapter implementation
 - Provider SDK selection and model calls
 - Database selection or cloud synchronization
 - Full authentication and multi-user access
@@ -80,9 +80,9 @@ Real provider mode is a later opt-in capability behind the same runtime adapter 
 
 ## 14. Implementation Phases
 
-1. **Architecture contract:** version the schemas, event vocabulary, privacy boundaries, mock fixtures, and acceptance tests.
-2. **Local mock harness:** build session create/resume, transcript, status, approvals, artifact drawer, persistence, and Markdown export against a deterministic mock adapter.
-3. **Runtime adapter:** implement the narrow local execution boundary with cancellation and structured errors, still using mock execution.
+1. **Architecture contract:** version the schemas, event vocabulary, privacy boundaries, mock fixtures, and acceptance tests. Complete for the initial contracts.
+2. **Mock runtime adapter:** implement the narrow local command boundary, ignored output records, structured events/status, and Markdown export. Complete for one synthetic `full_architecture` workflow.
+3. **Local mock harness:** build session create/resume, transcript, status, approvals, artifact drawer, persistence, and Markdown export against the deterministic mock adapter.
 4. **Opt-in provider adapter:** add one provider only after credential handling, privacy review, usage visibility, and failure behavior are specified and tested.
 5. **Hardening:** test migration, deletion, recovery, accessibility, and safe fallback to the static page.
 

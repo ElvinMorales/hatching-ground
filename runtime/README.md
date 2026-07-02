@@ -1,21 +1,23 @@
 # Runtime boundary
 
-The MVP is local-first and file-first. It requires no runtime integration: Markdown, JSON, a text editor, and optional assistant conversations are sufficient. The repository contains no agent runner and should not receive broad filesystem or write permissions.
+Hatching Ground now has a small local-first, mock-only runtime adapter. It accepts one `full_architecture` request, emits structured user-visible records, and writes a synthetic Markdown artifact. It uses the Python standard library, requires no key or network, and is a development/testing boundary rather than the final web harness.
 
-## Possible later runtime options
+## Current mock adapter
 
-- **Local folder only:** The current default and lowest-complexity option.
-- **ChatGPT project:** A possible reviewed workspace for safe artifacts.
-- **Codex handoff:** A bounded implementation prompt after an idea passes the hatch gate.
-- **VPS:** Optional later hosting only when a proven workflow requires it.
-- **OpenClaw Gateway:** Optional later integration only after a separate threat model and architecture review.
+```sh
+python scripts/run_mock_runtime.py --request runtime/examples/synthetic-run-request.json --out local/runs/synthetic-demo --reset
+```
 
-VPS and OpenClaw Gateway are not part of this MVP.
+The selected directory below `local/` receives `session.json`, `events.jsonl`, `run-status.json`, `artifacts.json`, `runtime-result.json`, and `artifacts/full-agent-architecture.md`. The runner reads only the request path and refuses to write outside this repository's ignored `local/` folder.
 
-## Later hardening requirements
+Validate contracts and tracked examples with `python scripts/validate_scaffold.py`. See [mock-runner.md](mock-runner.md) for usage and limitations.
 
-- Start read-only and apply least privilege.
-- Never grant broad filesystem access.
-- Store secrets in ignored `.env` files or an appropriate secret manager.
-- Require human approval for writes, sends, commits, deletes, spending, contacting people, and consequential changes.
-- Define data retention, auditability, failure behavior, and a kill switch before enabling automation.
+## Future provider adapter
+
+Provider mode is not implemented. Credentials, provider calls, SDKs, retries, cancellation, and usage reporting remain behind the documented boundary in [provider-adapter-boundary.md](provider-adapter-boundary.md). Provider runtime integrations, backend services, databases, deployment, and OpenClaw are not part of this MVP.
+
+## Storage and safety
+
+Generated runtime data belongs only under ignored `local/sessions/`, `local/artifacts/`, or `local/runs/`. Tracked examples must be synthetic and public-safe. Events are not raw logs, transcripts are not memory, and run status is not durable memory. Never grant broad filesystem access. Apply least privilege and require human review for consequential actions.
+
+Do not build provider calls, a backend, a web UI, a database, live memory/state, monitoring, messaging, or multi-agent orchestration in this runtime foundation.

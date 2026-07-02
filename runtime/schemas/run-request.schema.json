@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hatching-ground/runtime/schemas/run-request.schema.json",
+  "title": "HatchingGroundRuntimeRequest",
+  "description": "A request to the local runtime adapter. Only mock mode is implemented.",
+  "type": "object",
+  "required": ["request_id", "session_id", "run_id", "agent_id", "workflow", "runtime_mode", "created_at", "context", "privacy_mode", "output_preferences"],
+  "properties": {
+    "request_id": { "type": "string", "minLength": 1 },
+    "session_id": { "type": "string", "minLength": 1 },
+    "run_id": { "type": "string", "minLength": 1 },
+    "agent_id": { "type": "string", "minLength": 1 },
+    "workflow": { "type": "string", "enum": ["full_architecture"] },
+    "runtime_mode": { "type": "string", "enum": ["mock"] },
+    "created_at": { "type": "string", "format": "date-time" },
+    "context": {
+      "type": "object",
+      "required": ["idea_name", "hatch_gate_result", "architecture_brief_summary", "constraints", "desired_artifact_type"],
+      "properties": {
+        "idea_name": { "type": "string", "minLength": 1 },
+        "hatch_gate_result": { "type": "string", "enum": ["pass", "conditional-pass"] },
+        "architecture_brief_summary": { "type": "string", "minLength": 1 },
+        "constraints": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "desired_artifact_type": { "type": "string", "enum": ["full_architecture"] }
+      },
+      "additionalProperties": false
+    },
+    "privacy_mode": { "type": "string", "enum": ["synthetic-public-safe"] },
+    "output_preferences": {
+      "type": "object",
+      "required": ["format", "filename"],
+      "properties": {
+        "format": { "type": "string", "enum": ["markdown"] },
+        "filename": { "type": "string", "pattern": "^[A-Za-z0-9._-]+\\.md$" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,21 @@
+{
+  "request_id": "request-garden-full-architecture",
+  "session_id": "session-garden-demo",
+  "run_id": "run-garden-full-architecture",
+  "agent_id": "hatching-ground-mock",
+  "workflow": "full_architecture",
+  "runtime_mode": "mock",
+  "status": "completed",
+  "started_at": "2026-01-15T14:00:00Z",
+  "completed_at": "2026-01-15T14:00:20Z",
+  "event_stream_path": "events.jsonl",
+  "run_status_path": "run-status.json",
+  "artifact_manifest_path": "artifacts.json",
+  "artifact_paths": [
+    "artifacts/full-agent-architecture.md"
+  ],
+  "summary": "Created one synthetic public-safe full architecture artifact in deterministic mock mode.",
+  "warnings": [
+    "Mock content proves the contract only and requires human review before implementation."
+  ]
+}

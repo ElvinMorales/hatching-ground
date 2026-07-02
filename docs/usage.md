@@ -19,3 +19,15 @@ The full architecture is a design artifact, not a runtime. It must define an end
 Suppose a fictional user repeatedly writes unstructured garden-task notes. A narrow candidate is a **Garden Task Note Formatter**: it converts a pasted synthetic note into a dated checklist saved for review. It needs no integration, memory, or hosting. Its first-run test is whether three synthetic notes produce accurate checklists without inventing tasks. This is public-safe because both the scenario and test data are invented.
 
 The “universal garden manager” version—weather monitoring, purchases, reminders, and device control—should be split and deferred. The formatter can be useful before any automation exists.
+
+## Exercise the runtime contract
+
+After reviewing the synthetic request, run:
+
+```sh
+python scripts/run_mock_runtime.py --request runtime/examples/synthetic-run-request.json --out local/runs/synthetic-demo --reset
+```
+
+Review `session.json`, `events.jsonl`, `run-status.json`, `artifacts.json`, `runtime-result.json`, and the Markdown file below `local/runs/synthetic-demo/`. These files are ignored local output and must not be committed. The runner is the mock execution layer a future local web harness can consume; it is not the web harness or a model provider.
+
+Delete only the reviewed `local/runs/synthetic-demo/` directory when finished. Mock fixtures must be synthetic and public-safe; real private context, secrets, memory, state, and raw logs do not belong in tracked files.
