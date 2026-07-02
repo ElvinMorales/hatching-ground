@@ -22,10 +22,11 @@ This document defines the target architecture; none of those new runtime capabil
 2. Select a workflow and enter minimal, privacy-reviewed context.
 3. Turn a rough idea into an idea card.
 4. Score a clutch of candidates and apply the hatch gate.
-5. Produce an architecture artifact only after the gate passes.
-6. Produce a reviewed Codex handoff.
-7. Inspect the transcript, progress, status, and artifact drawer.
-8. Export selected artifacts as Markdown.
+5. Produce a pre-architecture brief only after the gate passes or conditionally passes.
+6. Produce a full architecture artifact using `workflows/full-architecture.md` after human review.
+7. Produce a reviewed Codex handoff from that architecture.
+8. Inspect the transcript, progress, status, and artifact drawer.
+9. Export selected artifacts as Markdown.
 
 Normal use stays inside the harness from rough idea through export. Consequential actions and sensitive-data disclosures always require explicit human review.
 
@@ -49,7 +50,7 @@ The event stream is an ordered, append-oriented record of user-visible activity.
 
 ## 9. Artifact Model
 
-Artifacts are typed, inspectable outputs such as idea cards, clutch scores, architecture briefs, Codex handoffs, and public/private checklists. Every artifact has an ID, source workflow, creation time, privacy classification, and export name. The artifact drawer lists artifacts by session and run, previews content, and exports selected content as Markdown. Artifacts do not become safe to commit merely because they were exported.
+Artifacts are typed, inspectable outputs such as idea cards, clutch scores, architecture briefs, full architectures, Codex handoffs, and public/private checklists. Every artifact has an ID, source workflow, creation time, privacy classification, and export name. The artifact drawer lists artifacts by session and run, previews content, and exports selected content as Markdown. Artifacts do not become safe to commit merely because they were exported.
 
 ## 10. Local Storage and Privacy Model
 
@@ -91,7 +92,7 @@ Each phase should remain independently reviewable and preserve the static page a
 
 The first usable product is accepted when:
 
-- One local interface supports rough idea -> idea card -> clutch score -> hatch gate -> architecture -> Codex handoff -> Markdown export.
+- One local interface supports rough idea -> idea card -> clutch score -> hatch gate -> architecture brief -> full architecture -> Codex handoff -> Markdown export.
 - A user can create, close, resume, and delete a local session.
 - Normal use has no prompt/output copy/paste relay.
 - The transcript, current step, progress, errors, approvals, and artifacts are visible and consistent with emitted events.

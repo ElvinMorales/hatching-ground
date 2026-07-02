@@ -11,20 +11,20 @@
   "preferred_build_style": "Single Python script, file-first, no server.",
   "rough_idea": "A small script that reads a folder of Markdown notes about plants, adds consistent YAML front matter tags, and builds a simple index file so I can search by plant type or care category.",
   "clutch_input": "Option A: garden-note formatter. Option B: universal household organizer. Option C: recipe-tag cleaner.",
-  "generated_prompt": "WORKFLOW: full_architecture\n\nContext: Home and garden notes. Goal: Automatically tag and cross-link plant notes. Friction: Repeated notes, hard to find at the plant.\n\nRough idea: A small script that reads a Markdown folder, adds YAML front matter tags, and builds an index.\n\nPlease produce a full architecture document with these sections:\n1. Idea Restatement\n2. Recommended Pattern\n3. MVP Scope\n4. Taxonomy Artifact Map\n5. Proposed Repo Structure\n6. UI Harness Recommendation\n7. Key Design Decisions\n8. Guardrails and Privacy Notes\n9. Codex Implementation Prompt\n10. Powering and Usage Plan\n11. First-Run Checklist\n12. Iteration Backlog\n\nHatching Ground principles: artifact-first, private-first, smallest useful version, no overbuilding, human review for consequential actions.",
-  "model_output": "## 1. Idea Restatement\n\nA local Python script that reads a folder of Markdown plant-care notes, adds consistent YAML front matter (plant name, care type, tags), and writes an `index.md` for quick lookup.\n\n## 2. Recommended Pattern\n\nFile transformer + index writer. Input: `notes/*.md`. Output: tagged notes in-place + `index.md`.\n\n## 3. MVP Scope\n\n- Read existing `.md` files\n- Detect plant name from filename or first heading\n- Apply a small fixed tag vocabulary (watering, pruning, pests, fertilizer)\n- Write YAML front matter block\n- Write `index.md` with links grouped by tag\n\n## 4. Taxonomy Artifact Map\n\n- `notes/*.md` — individual plant notes (private)\n- `index.md` — generated index (potentially publishable if synthetic)\n- `tag-vocabulary.json` — controlled tag list (public-safe)\n\n[...full architecture abbreviated for synthetic example...]",
+  "generated_prompt": "WORKFLOW: full_architecture\n\nHatch gate: passed. Context: Home and garden notes. Goal: Automatically tag and cross-link plant notes. Friction: Repeated notes, hard to find at the plant.\n\nRough idea: A small script that reads a Markdown folder, adds YAML front matter tags, and builds an index.\n\nPlease produce a full architecture document with these sections:\n1. Idea Restatement\n2. Recommended Pattern\n3. First Usable Product Scope\n4. Taxonomy Artifact Map\n5. Proposed Repo Structure\n6. UI Harness Recommendation\n7. Key Design Decisions\n8. Guardrails and Privacy Notes\n9. Codex Implementation Prompt\n10. Powering and Usage Plan\n11. First-Run Checklist\n12. Iteration Backlog\n\nHatching Ground principles: artifact-first, private-first, end-to-end first usable product, no unnecessary copy/paste relay, no overbuilding, human review for consequential actions.",
+  "model_output": "## 1. Idea Restatement\n\nA local Python script that reads a folder of Markdown plant-care notes, adds consistent YAML front matter (plant name, care type, tags), and writes an index for quick lookup.\n\n## 2. Recommended Pattern\n\nFile transformer + index writer. Input: Markdown notes. Output: tagged notes and an index after review.\n\n## 3. First Usable Product Scope\n\n- Read existing Markdown files\n- Detect plant name from filename or first heading\n- Apply a small fixed tag vocabulary (watering, pruning, pests, fertilizer)\n- Preview proposed YAML front matter for human review\n- Write approved front matter and an index grouped by tag\n\n## 4. Taxonomy Artifact Map\n\n- Plant note files — individual plant notes (private)\n- Generated index — potentially publishable if synthetic\n- Tag vocabulary — controlled tag list (public-safe)\n\n[...full architecture abbreviated for synthetic example...]",
   "validation_summary": {
     "passed": true,
     "checks_run": [
       "has_idea_restatement",
-      "has_mvp_scope",
+      "has_first_usable_product_scope",
       "has_privacy_notes",
       "has_codex_prompt",
       "no_broad_permissions",
       "no_cloud_deployment"
     ],
     "warnings": [],
-    "notes": "All required sections present. MVP is bounded. No cloud or API dependencies."
+    "notes": "All required sections present. The first usable product is bounded and end to end. No cloud or API dependencies."
   },
   "artifacts": [
     {
@@ -35,7 +35,7 @@
       "created_at": "2026-07-01T10:45:00Z",
       "privacy_classification": "potentially-publishable",
       "source_workflow": "full_architecture",
-      "content_summary": "Twelve-section architecture document for a local Python plant-note tagger. MVP is one script, no server.",
+      "content_summary": "Twelve-section architecture document for a local Python plant-note tagger. The first usable product is one reviewed local workflow with no server.",
       "should_commit": false
     }
   ]

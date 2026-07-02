@@ -1,11 +1,18 @@
 # Usage
 
-1. Start with a copy-paste prompt from `prompts/starter-prompts.md`.
-2. Create one idea card per candidate in an ignored local folder.
+The canonical artifact path is:
+
+`idea discovery -> idea intake -> incubation scorecard -> hatching workflow -> architecture brief -> full architecture -> Codex handoff`
+
+1. Start with a prompt from `prompts/starter-prompts.md` and follow `workflows/idea-discovery.md`.
+2. Create one idea card per candidate in an ignored local folder using `workflows/idea-intake.md`.
 3. Score the clutch with `workflows/incubation-scorecard.md`.
 4. Pick one hatchling or explicitly park, split, merge, or discard each candidate.
-5. Apply the hatch gate and create a pre-architecture brief.
-6. Use a separate architecture workflow later, after human review.
+5. Follow `workflows/hatching-workflow.md`, apply the hatch gate, and create a pre-architecture brief.
+6. After a pass or conditional pass and human review, follow `workflows/full-architecture.md` and complete `templates/full-agent-architecture.md`.
+7. Review the full architecture, then use its Codex implementation prompt as a handoff for a separately authorized implementation issue.
+
+The full architecture is a design artifact, not a runtime. It must define an end-to-end first usable product and make an explicit UI harness decision. Any normal-use copy/paste relay is a prototype/manual fallback, not the target experience. Keep private instances in ignored local folders and use only synthetic examples in tracked files.
 
 ## Synthetic example
 
