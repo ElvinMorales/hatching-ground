@@ -10,7 +10,7 @@ A fictional home gardener needs one unstructured synthetic note turned into a da
 
 A single, local/file-first workflow agent. One bounded transformation keeps the behavior inspectable and requires no integration, autonomy, or persistent profile.
 
-## MVP scope
+## First usable product scope
 
 The first usable product accepts one pasted or typed synthetic note and a date, extracts only explicit actions, displays a reviewable checklist, and exports Markdown. It does not monitor weather, buy supplies, send reminders, control devices, diagnose plants, or scan folders.
 
