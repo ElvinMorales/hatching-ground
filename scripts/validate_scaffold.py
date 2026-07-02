@@ -23,18 +23,27 @@ REQUIRED_FILES = [
     "guardrails/public-private-boundary.md", "runtime/README.md",
     "runtime/.env.example", "evals/rubric.md", "evals/cases.jsonl",
     "docs/setup.md", "docs/usage.md", "docs/maintenance.md",
+    "docs/first-usable-product-plan.md",
     "scripts/validate_scaffold.py",
     # UI harness
     "ui-harness/README.md", "ui-harness/harness-contract.md",
     "ui-harness/session.schema.json", "ui-harness/artifact.schema.json",
-    "ui-harness/workflow.schema.json",
+    "ui-harness/workflow.schema.json", "ui-harness/events.schema.json",
+    "ui-harness/agent-profile.schema.json", "ui-harness/run-status.schema.json",
+    "ui-harness/approval.schema.json",
     "ui-harness/examples/synthetic-session.json",
+    "ui-harness/examples/sanitized-event-stream.jsonl",
     "ui/hatching-ground.html", "docs/ui-harness.md",
 ]
 
 EVAL_FIELDS = {
     "case_name", "user_input", "expected_behavior", "must_include",
     "must_avoid", "pass_fail_notes",
+}
+
+EVENT_FIELDS = {
+    "event_id", "session_id", "agent_id", "timestamp", "type",
+    "human_summary", "payload", "risk_level", "artifact_ids",
 }
 
 IGNORE_RULES = {
@@ -52,6 +61,7 @@ CONTENT_CHECKS = {
     "runtime/README.md": ["local-first", "not part of this MVP", "least privilege"],
     "ui-harness/harness-contract.md": ["model API calls", "durable memory", "broad filesystem access"],
     "docs/ui-harness.md": ["local-first", "network calls", "artifacts/private/"],
+    "docs/first-usable-product-plan.md": ["normal-use copy/paste relay", "Mock Mode", "Acceptance Criteria"],
 }
 
 
@@ -73,6 +83,10 @@ def main() -> int:
         "ui-harness/session.schema.json",
         "ui-harness/artifact.schema.json",
         "ui-harness/workflow.schema.json",
+        "ui-harness/events.schema.json",
+        "ui-harness/agent-profile.schema.json",
+        "ui-harness/run-status.schema.json",
+        "ui-harness/approval.schema.json",
     ]
     for name in harness_schemas:
         try:
@@ -93,6 +107,40 @@ def main() -> int:
                     failures.append(f"ui-harness/examples/synthetic-session.json: missing field: {field}")
     except (OSError, json.JSONDecodeError) as exc:
         failures.append(f"ui-harness/examples/synthetic-session.json: invalid JSON: {exc}")
+
+    event_stream_path = ROOT / "ui-harness/examples/sanitized-event-stream.jsonl"
+    event_count = 0
+    try:
+        for line_number, raw_line in enumerate(
+            event_stream_path.read_text(encoding="utf-8").splitlines(), 1
+        ):
+            if not raw_line.strip():
+                continue
+            event_count += 1
+            try:
+                event = json.loads(raw_line)
+            except json.JSONDecodeError as exc:
+                failures.append(
+                    f"ui-harness/examples/sanitized-event-stream.jsonl:{line_number}: "
+                    f"invalid JSON: {exc}"
+                )
+                continue
+            if not isinstance(event, dict):
+                failures.append(
+                    f"ui-harness/examples/sanitized-event-stream.jsonl:{line_number}: "
+                    "expected a JSON object"
+                )
+                continue
+            missing_fields = EVENT_FIELDS - event.keys()
+            if missing_fields:
+                failures.append(
+                    f"ui-harness/examples/sanitized-event-stream.jsonl:{line_number}: "
+                    "missing fields: " + ", ".join(sorted(missing_fields))
+                )
+        if event_count == 0:
+            failures.append("ui-harness/examples/sanitized-event-stream.jsonl: expected at least one event")
+    except OSError as exc:
+        failures.append(f"ui-harness/examples/sanitized-event-stream.jsonl: unreadable: {exc}")
 
     eval_path = ROOT / "evals/cases.jsonl"
     eval_count = 0
@@ -156,8 +204,9 @@ def main() -> int:
 
     print(f"PASS: {len(REQUIRED_FILES)} required files present")
     print("PASS: 2 core JSON Schemas parse as JSON")
-    print("PASS: 3 harness JSON Schemas parse as JSON")
+    print("PASS: 7 harness JSON Schemas parse as JSON")
     print("PASS: synthetic harness session parses as JSON with required fields")
+    print(f"PASS: {event_count} sanitized event records parse and contain required fields")
     print(f"PASS: {eval_count} JSONL eval cases parse and contain required fields")
     print("PASS: required content and privacy-oriented ignore rules found")
     print("PASS: no obvious embedded secrets found (manual review still required)")

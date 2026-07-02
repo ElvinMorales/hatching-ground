@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hatching-ground/ui-harness/events.schema.json",
+  "title": "HatchingGroundEvent",
+  "description": "A user-visible event emitted by a future local Hatching Ground harness. Events are structured activity records, not raw logs, memory, or state snapshots.",
+  "type": "object",
+  "required": ["event_id", "session_id", "agent_id", "timestamp", "type", "human_summary", "payload", "risk_level", "artifact_ids"],
+  "properties": {
+    "event_id": { "type": "string", "minLength": 1 },
+    "session_id": { "type": "string", "minLength": 1 },
+    "agent_id": { "type": "string", "minLength": 1 },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "type": {
+      "type": "string",
+      "enum": ["session.started", "message.created", "plan.proposed", "plan.updated", "progress.updated", "artifact.created", "approval.requested", "approval.resolved", "state.updated", "error.raised", "run.completed"]
+    },
+    "human_summary": { "type": "string", "minLength": 1 },
+    "payload": { "type": "object" },
+    "risk_level": { "type": "string", "enum": ["low", "medium", "high"] },
+    "artifact_ids": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+  },
+  "additionalProperties": false
+}

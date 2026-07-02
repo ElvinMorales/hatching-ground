@@ -1,101 +1,58 @@
 # UI Harness
 
-## What the UI harness is
+## Current static prototype/manual bridge
 
-The UI harness is a local, self-contained HTML interface for Hatching Ground. It assembles paste-ready prompts from your context and the selected workflow template, accepts pasted model output, validates it heuristically, and exports Markdown artifacts. It is part of the artifact system, not a replacement for it.
+`ui/hatching-ground.html` is the currently implemented interface. It is a self-contained `file://` page that assembles prompts, accepts pasted model output, validates output heuristically, and exports Markdown. It has no backend, persistence, network calls, external dependencies, model API calls, or broad filesystem access.
 
-## Why Hatching Ground needs an interface
+The page is useful for testing the artifact workflow and as a transparent manual fallback. Because the user must relay prompts and model output, it is not the target first usable product.
 
-Using Hatching Ground repeatedly means filling in the same context fields, selecting the right prompt template, and tracking which workflow applies. Without an interface, that mechanical work is manual every time. The harness eliminates the friction without adding a backend, persistence layer, or model API.
+## Target local web harness
 
-## What the MVP UI does
+The planned first usable product is a local-first, session-based web harness. In one local interface, a user should be able to create or resume a session, select a workflow, provide privacy-reviewed context, run through a mock or local runtime adapter, inspect the transcript and status, resolve visible approvals, manage generated artifacts, and export Markdown.
 
-- Lets you select one of eight Hatching Ground workflows.
-- Collects context: project area, goal, friction, constraints, privacy notes, build style.
-- Accepts a rough idea and/or clutch of candidates.
-- Generates a complete, paste-ready prompt for Claude or GPT.
-- Lets you copy or download the prompt as `hatching-ground-prompt.txt`.
-- Accepts pasted model output.
-- Runs heuristic validation (checks for required sections, privacy notes, bounded scope).
-- Exports the validated output as a Markdown file with a recommended filename.
-- Shows safety warnings throughout.
+Normal use will not require copying a prompt to another interface and pasting output back. The architecture and phased boundaries are defined in [the first usable product plan](first-usable-product-plan.md). These capabilities are planned, not currently implemented.
 
-## What the MVP UI does not do
+## What changes in the first usable product
 
-- It does not call any model API.
-- It does not store data between sessions.
-- It does not use cookies, localStorage, sessionStorage, or any browser persistence.
-- It does not make network calls.
-- It does not use external scripts, stylesheets, or fonts.
-- It does not send analytics.
-- It does not log user input to the console.
-- It does not deploy or operate any agent.
+- Durable local session creation, resume, and deletion
+- Workflow and context intake inside a session
+- Mock-adapter and runtime-adapter execution boundary
+- User-visible transcript and structured event stream
+- Current run status, progress, errors, and cancellation
+- Visible approval objects with safe defaults
+- Artifact drawer with previews and Markdown export
+- Local private persistence outside tracked repository paths
+- Provider configuration isolated behind a future adapter boundary
 
-## How to open `ui/hatching-ground.html`
+The harness owns presentation, local interaction, and export. The future runtime owns workflow execution and structured event/status emission. Neither layer silently approves consequential actions.
 
-Open the file directly in a web browser:
+## What stays deferred
 
-```
-# macOS
-open ui/hatching-ground.html
+- Runtime adapter and provider implementation
+- Provider SDKs and model calls
+- Database choice, cloud sync, and multi-device storage
+- OpenClaw Gateway and VPS deployment
+- Multi-agent orchestration, scheduling, messaging, and monitoring
+- Full authentication or multi-user access
+- Live memory, memory proposal inboxes, and state snapshots
+- Broad filesystem access and write-capable tools
 
-# Windows
-start ui/hatching-ground.html
+## Manual fallback instructions
 
-# Linux
-xdg-open ui/hatching-ground.html
-```
+Use the current page when testing workflows or when the future local harness is unavailable:
 
-No server required. Works from `file://`.
+1. Open `ui/hatching-ground.html` directly in a browser.
+2. Select a workflow and enter only public-safe or appropriately local context.
+3. Generate and copy the prompt.
+4. Paste it into the model interface you chose.
+5. Paste the model response into the page.
+6. Run the relevant heuristic validation and review warnings.
+7. Download the Markdown artifact.
 
-## How to use it with Claude or GPT
+The fallback page does not send or retain content automatically. Opening it requires no server.
 
-1. Open `ui/hatching-ground.html` in a browser.
-2. Select a workflow.
-3. Fill in the context fields.
-4. Click **Generate Prompt**.
-5. Click **Copy Prompt** or **Download Prompt**.
-6. Paste the prompt into Claude, GPT, or another assistant.
-7. Copy the model's response.
-8. Paste it into the **Model Output** area in the UI.
-9. Click a **Validate** button for the relevant workflow.
-10. Review any warnings.
-11. Click **Download Output as Markdown** to save the artifact.
+## Artifact export and privacy
 
-## How to export artifacts
+Recommended exports include `idea-card.md`, `clutch-score.md`, `architecture-brief.md`, `full-agent-architecture.md`, `codex-handoff.md`, and `public-private-checklist.md`.
 
-Use the download controls at the bottom of the page. Each workflow has a recommended filename:
-
-| Workflow | Recommended filename |
-|---|---|
-| Idea Card | `idea-card.md` |
-| Clutch Score | `clutch-score.md` |
-| Architecture Brief | `architecture-brief.md` |
-| Full Architecture | `full-agent-architecture.md` |
-| Codex Handoff | `codex-handoff.md` |
-| Public/Private Checklist | `public-private-checklist.md` |
-
-## Where private outputs should live
-
-Save downloaded artifacts to an ignored local folder:
-
-- `local/` (gitignored at repo root)
-- `artifacts/private/` (gitignored)
-- Any folder not tracked by git
-
-Never save private outputs to a tracked folder. Never commit real personal data, private notes, credentials, employer information, or machine-specific paths.
-
-## Why the harness is local-first
-
-Keeping the harness local-first preserves the core Hatching Ground principle: the user is always in control, nothing leaves their machine without explicit action, and the system is inspectable at every step. Model API calls, cloud storage, and background agents are deferred until a proven use case justifies the additional complexity and trust surface.
-
-## What should wait for v2
-
-- Durable encrypted session storage.
-- Controlled model API calls with user-managed keys.
-- OpenClaw Gateway integration.
-- Multi-session management.
-- Server-side rendering or a lightweight backend.
-- Automated artifact organization.
-
-These are explicitly out of scope for the MVP. See `ui-harness/harness-contract.md` for the full boundary definition.
+Save private outputs in an ignored `local/` or `artifacts/private/` directory. Never commit real personal, health, financial, employer, credential, memory, state, transcript, or event-stream data. Tracked examples must stay synthetic and public-safe.
