@@ -14,6 +14,10 @@ Use evidence from actual, private use to improve shared artifacts without copyin
 
 Update prompts and templates only after observed use shows a repeatable gap. Prefer one small rule plus an eval case over adding a large process.
 
+## CI validation
+
+CI runs `python scripts/validate_scaffold.py` on pull requests and pushes to `main`. The validator reads only repository and local generated test files, requires no secrets, and should be run locally before opening a pull request.
+
 ## Future issues
 
 Open one issue per concrete problem. Include a synthetic reproduction, desired behavior, affected artifacts, acceptance criteria, and explicit non-goals. Do not paste real cards, logs, memory, state, screenshots, or machine paths. Runtime or integration proposals must explain why the file-first workflow is insufficient and identify privacy, permission, and human-approval requirements.

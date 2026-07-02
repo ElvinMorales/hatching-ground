@@ -16,7 +16,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_FILES = [
-    "README.md", "AGENTS.md", ".gitignore",
+    "README.md", "AGENTS.md", ".gitignore", ".github/workflows/validate.yml",
     "agent/identity.md", "agent/operating-style.md",
     "prompts/starter-prompts.md",
     "workflows/idea-discovery.md", "workflows/idea-intake.md",
@@ -229,6 +229,47 @@ def main() -> int:
 
     missing = [name for name in REQUIRED_FILES if not (ROOT / name).is_file()]
     failures.extend(f"missing required file: {name}" for name in missing)
+
+    workflow_name = ".github/workflows/validate.yml"
+    try:
+        workflow = (ROOT / workflow_name).read_text(encoding="utf-8")
+        workflow_casefold = workflow.casefold()
+        required_workflow_patterns = {
+            "pull_request trigger": r"(?m)^\s*pull_request\s*:",
+            "push trigger": r"(?m)^\s*push\s*:",
+            "main branch": r"(?m)^\s*-\s*main\s*$",
+            "read-only contents permission": r"(?m)^\s*contents\s*:\s*read\s*$",
+            "checkout action": r"\bactions/checkout@",
+            "Python setup action": r"\bactions/setup-python@",
+            "scaffold validator command": r"\bpython\s+scripts/validate_scaffold\.py\b",
+        }
+        for description, pattern in required_workflow_patterns.items():
+            if not re.search(pattern, workflow, flags=re.IGNORECASE):
+                failures.append(f"{workflow_name}: missing {description}")
+
+        prohibited_workflow_patterns = {
+            "secret reference": r"\bsecrets\s*\.",
+            "dependency installation": r"\bpip\s+install\b",
+            "Poetry command": r"\bpoetry\b",
+            "Pipenv command": r"\bpipenv\b",
+            "npm command": r"\bnpm\b",
+            "pnpm command": r"\bpnpm\b",
+            "Yarn command": r"\byarn\b",
+            "curl command": r"\bcurl\b",
+            "wget command": r"\bwget\b",
+            "Docker command": r"\bdocker\b",
+            "deployment command": r"\bdeploy(?:ment)?\b",
+            "OpenAI API key": r"\bopenai_api_key\b",
+            "Anthropic API key": r"\banthropic_api_key\b",
+            "write permission": r"(?m)^\s*(?:contents|actions|checks|deployments|issues|packages|pull-requests|statuses)\s*:\s*write\s*$",
+            "write-all permission": r"(?m)^\s*permissions\s*:\s*write-all\s*$",
+        }
+        for description, pattern in prohibited_workflow_patterns.items():
+            if re.search(pattern, workflow_casefold):
+                failures.append(f"{workflow_name}: prohibited {description} found")
+    except OSError as exc:
+        if workflow_name not in missing:
+            failures.append(f"{workflow_name}: unreadable: {exc}")
 
     example_contents: dict[str, str] = {}
     unsafe_example_patterns = {
@@ -593,6 +634,7 @@ def main() -> int:
     print("PASS: browserless local harness server/API smoke test")
     print("PASS: synthetic example pack labels, safety, reading order, architecture, and handoff")
     print("PASS: local harness frontend has no external resource dependencies")
+    print("PASS: GitHub Actions validation workflow is minimal and read-only")
     print("PASS: required content and privacy-oriented ignore rules found")
     print("PASS: no obvious embedded secrets found (manual review still required)")
     return 0
